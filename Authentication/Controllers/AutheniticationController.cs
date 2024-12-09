@@ -51,12 +51,12 @@ namespace Authentication.Controllers
         [HttpPost]
         [Route("change/password")]
         public IActionResult ChangePassword([FromBody] Json.Requests.ChangePasswordRequest changePasswordRequest) {
-            ChangePasswordResponse changePasswordResponse = new ChangePasswordResponse();
-            // todo
             var idendity = User.Identity as ClaimsIdentity;
-            Console.WriteLine($"User is {idendity.FindFirst(ClaimTypes.Email).Value}");
 
-            return Ok(new { message = "todo - change password logic"});
+            ChangePasswordResponse changePasswordResponse = new ChangePasswordResponse();
+            changePasswordResponse = Application.ChangePassword.Change(changePasswordRequest, idendity.FindFirst(ClaimTypes.Email).Value);
+   
+            return Ok(changePasswordResponse);
         
         }
 

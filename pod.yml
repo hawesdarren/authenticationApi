@@ -15,6 +15,14 @@ spec:
         imagePullPolicy: Never
         ports:
         - containerPort: 7044
+        volumeMounts:
+          - mountPath: "/app"
+            name: secrets
+            readOnly: true
+      volumes:
+        name: secrets
+        secret:
+          secretName: auth-secret
   selector:
     matchLabels:
       app: authentication-api

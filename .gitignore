@@ -4,3 +4,7 @@
 
 /.vs/Authentication
 /AuthenticationDatabase/bin/Debug/net8.0
+/Authentication/bin
+/Authentication/obj
+/Authentication/secrets.json
+/.vs/ProjectEvaluation

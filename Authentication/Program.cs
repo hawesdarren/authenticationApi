@@ -1,12 +1,18 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.IdentityModel.Tokens;
-using Org.BouncyCastle.Pkix;
+using Microsoft.Extensions.Configuration.Json;
 using System.Security.Claims;
 using System.Text;
+using System.Runtime.InteropServices;
 
 var builder = WebApplication.CreateBuilder(args);
+
+/*if (!builder.Environment.IsDevelopment())
+{
+    //Not sure this needed
+    builder.Configuration.AddJsonFile("secrets.json", optional: true);
+}*/
+builder.Configuration.AddJsonFile("secrets.json", optional: true);
 var issuerSigningKey = builder.Configuration["authentication:issuerSigningKey"];
 var validIssuer = builder.Configuration["authentication:validIssuer"];
 var validAudience = builder.Configuration["authentication:validAudience"];
