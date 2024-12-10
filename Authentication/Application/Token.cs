@@ -12,8 +12,17 @@ namespace Authentication.Application
                 
         public static string GenerateJwtToken(string email)
         {
-            var config = new ConfigurationBuilder().AddUserSecrets<Program>()
-                                                   .AddJsonFile("secrets.json", optional: true).Build();
+            
+            //var config = new ConfigurationBuilder().AddUserSecrets<Program>().AddJsonFile("secrets.json", optional: true).Build();
+            var builder = new ConfigurationBuilder().AddUserSecrets<Program>();
+            var projectDir = Directory.GetParent("Authentication");
+            var secretFiles = Directory.EnumerateFiles(".", "secrets.json", SearchOption.AllDirectories);
+            foreach (var path in secretFiles)
+            {
+                builder.AddJsonFile(path, optional: true);
+                //config.Configuration.AddJsonFile(path);
+            }
+            var config = builder.Build();
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["authentication:issuerSigningKey"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
