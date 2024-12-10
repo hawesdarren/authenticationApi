@@ -4,15 +4,16 @@ using Microsoft.Extensions.Configuration.Json;
 using System.Security.Claims;
 using System.Text;
 using System.Runtime.InteropServices;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
-/*if (!builder.Environment.IsDevelopment())
-{
-    //Not sure this needed
-    builder.Configuration.AddJsonFile("secrets.json", optional: true);
-}*/
-builder.Configuration.AddJsonFile("secrets.json", optional: true);
+var secretFiles = Directory.EnumerateFiles(".", "secrets.json", SearchOption.AllDirectories);
+foreach (var path in secretFiles) { 
+    builder.Configuration.AddJsonFile(path);
+}
+//builder.Configuration.AddJsonFile(secretFiles.ToString(), optional: true);
 var issuerSigningKey = builder.Configuration["authentication:issuerSigningKey"];
 var validIssuer = builder.Configuration["authentication:validIssuer"];
 var validAudience = builder.Configuration["authentication:validAudience"];

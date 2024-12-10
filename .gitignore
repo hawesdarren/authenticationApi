@@ -8,3 +8,4 @@
 /Authentication/obj
 /Authentication/secrets.json
 /.vs/ProjectEvaluation
+/Authentication/secret-volume

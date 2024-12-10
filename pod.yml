@@ -14,13 +14,14 @@ spec:
         image: authenticationapi
         imagePullPolicy: Never
         ports:
-        - containerPort: 7044
+        - containerPort: 8080
         volumeMounts:
-          - mountPath: "/app"
-            name: secrets
-            readOnly: true
+        - name: secret-volume
+          mountPath: /app/secret-volume/secrets.json
+          subPath: secrets.json
+          readOnly: true
       volumes:
-        name: secrets
+      - name: secret-volume
         secret:
           secretName: auth-secret
   selector:
@@ -36,6 +37,6 @@ spec:
   ports:
     - port: 8080
       nodePort: 31302
-      name: https
+      name: http
   selector:
     app: authentication-api
