@@ -13,6 +13,10 @@ spec:
       - name: authentication-api
         image: authenticationapi
         imagePullPolicy: Never
+        resources:
+          limits:
+            memory: "500Mi"
+            cpu: "250m"
         ports:
         - containerPort: 8080
         volumeMounts:
@@ -24,6 +28,12 @@ spec:
       - name: secret-volume
         secret:
           secretName: auth-secret
+      livenessProbe:
+        httpGet:
+          path: /health
+          port: 8080
+       initialDelaySeconds: 10
+       periodSeconds: 10
   selector:
     matchLabels:
       app: authentication-api
@@ -35,8 +45,9 @@ metadata:
 spec:
   type: NodePort
   ports:
-    - port: 8080
+    - name: http
+      port: 8080
+      targetPort: 8080
       nodePort: 31302
-      name: http
   selector:
     app: authentication-api

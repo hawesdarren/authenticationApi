@@ -60,7 +60,7 @@ namespace Authentication.Controllers
         
         }
 
-        [HttpPost]
+        [HttpGet]
         [Route("health")]
         public IActionResult Health()
         {
