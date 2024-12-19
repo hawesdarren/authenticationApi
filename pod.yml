@@ -24,16 +24,16 @@ spec:
           mountPath: /app/secret-volume/secrets.json
           subPath: secrets.json
           readOnly: true
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 10
       volumes:
       - name: secret-volume
         secret:
           secretName: auth-secret
-      livenessProbe:
-        httpGet:
-          path: /health
-          port: 8080
-       initialDelaySeconds: 10
-       periodSeconds: 10
   selector:
     matchLabels:
       app: authentication-api
@@ -41,13 +41,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: authentication-api
+  name: authentication-api-service
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
     - name: http
       port: 8080
       targetPort: 8080
-      nodePort: 31302
   selector:
     app: authentication-api
