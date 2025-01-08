@@ -9,3 +9,8 @@
 /Authentication/secrets.json
 /.vs/ProjectEvaluation
 /Authentication/secret-volume
+/IntergrationTests/bin/Debug/net8.0
+/IntergrationTests/obj/Debug/net8.0
+/IntergrationTests/obj
+/UnitTests/bin/Debug/net8.0
+/UnitTests/obj

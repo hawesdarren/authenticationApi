@@ -42,7 +42,7 @@ namespace Authentication.Application
                 return loginResponse;
             }
             // Is Password in a Temporary block (not this is not a temp password but a temporary block due to max login attempts)
-            var isTempBlock = PasswordValidation.IsTemporaryBlockedPassword(loginRequest.email);
+             var isTempBlock = PasswordValidation.IsTemporaryBlockedPassword(loginRequest.email);
             if (isTempBlock) {
                 loginResponse.Success = false;
                 loginResponse.SetError(LoginResponse.Error.PASSWORD_TEMP_BLOCK);

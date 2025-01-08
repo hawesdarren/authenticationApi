@@ -187,7 +187,7 @@ namespace Authentication.Application.Validations
             {
                 // Put a temp block on the user and set login attempts to 0
                 DateTime tempBlock = DateTime.UtcNow.AddMinutes(10);
-                string sqlTempBlockString = $"UPDATE Authentication.users SET tempBlockExpiry = '{tempBlock.ToString("yyyy-MM-dd hh:mm:ss")}' WHERE email = '{email}'";
+                string sqlTempBlockString = $"UPDATE Authentication.users SET tempBlockExpiry = '{tempBlock.ToString("yyyy-MM-dd HH:mm:ss")}' WHERE email = '{email}'";
                 MySqlCommand cmd2 = new MySqlCommand(sqlTempBlockString, conn);
                 var blockQueryResult = cmd2.ExecuteNonQuery();
                 result.Add("blocked", true);
