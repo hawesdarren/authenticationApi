@@ -14,3 +14,4 @@
 /IntergrationTests/obj
 /UnitTests/bin/Debug/net8.0
 /UnitTests/obj
+/Performance/results.csv

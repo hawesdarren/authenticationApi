@@ -1,0 +1,17 @@
+{
+    "baseURL": "https://localhost:443/",
+    "emails": [
+        { "email": "performance1@hawes.co.nz"},
+        { "email": "performance2@hawes.co.nz"},
+        { "email": "performance3@hawes.co.nz"},
+        { "email": "performance4@hawes.co.nz"},
+        { "email": "performance5@hawes.co.nz"},
+        { "email": "performance6@hawes.co.nz"},
+        { "email": "performance7@hawes.co.nz"},
+        { "email": "performance8@hawes.co.nz"},
+        { "email": "performance9@hawes.co.nz"},
+        { "email": "performance10@hawes.co.nz"}
+
+    ]
+
+}
