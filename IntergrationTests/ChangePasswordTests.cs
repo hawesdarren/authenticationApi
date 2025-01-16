@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Authentication.Application;
-using FluentAssertions;
+using Shouldly;
 using Flurl;
 using Flurl.Http;
 
@@ -26,7 +26,7 @@ namespace IntergrationTests
                             .AppendPathSegment("api/authentication/login")
                             .PostJsonAsync(loginRequest)
                             .ReceiveJson<Authentication.Json.Responses.LoginResponse>();
-            loginResponse.Success.Should().BeTrue();
+            loginResponse.Success.ShouldBeTrue();
             var token = loginResponse.token;
 
             // Change password
@@ -41,9 +41,10 @@ namespace IntergrationTests
                             .WithHeader("Authorization", "Bearer " + token)
                             .PostJsonAsync(request)
                             .ReceiveJson<Authentication.Json.Responses.ChangePasswordResponse>();
-            response.ToString().Should().NotBeNull();
-            response.Success.Should().BeTrue();
-
+            response.ShouldSatisfyAllConditions(
+                () => response.ShouldNotBeNull(),
+                () => response.Success.ShouldBeTrue()
+                );
         }
 
         [Test]
@@ -63,7 +64,7 @@ namespace IntergrationTests
                             .AllowAnyHttpStatus()
                             .PostJsonAsync(request);
 
-            response.StatusCode.Should().Be(401);
+            response.StatusCode.ShouldBe(401);
 
         }
 

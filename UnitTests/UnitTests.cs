@@ -1,7 +1,7 @@
 using Authentication.Application;
 using Authentication.Application.Validations;
 using Microsoft.Extensions.Primitives;
-using FluentAssertions;
+using Shouldly;
 
 namespace UnitTests
 {
@@ -22,7 +22,7 @@ namespace UnitTests
         {
             
             bool result = EmailValidation.ValidateFormat(email);
-            result.Should().Be(expectedResult);
+            result.ShouldBe(expectedResult);
         }
 
         [TestCase("Password123", true)]
@@ -36,22 +36,26 @@ namespace UnitTests
         [TestCase("", false)]
         public void PasswordValidationTests(string password, bool expectedResult) { 
             bool result = PasswordValidation.PasswordComplexityCheck(password);
-            result.Should().Be(expectedResult);
+            result.ShouldBe(expectedResult);
         }
 
         [TestCase("someone@somewhere.com")]
         public void CreateTokenTest(string email) {
             var result = Token.GenerateJwtToken(email);
-            result.Should().NotBeNull()
-                .And.BeOfType(typeof(string));
-            
+            result.ShouldSatisfyAllConditions(
+                () => result.ShouldNotBeNullOrEmpty(),
+                () => result.ShouldBeOfType<string>()
+            );
+ 
         }
 
         [Test]
         public void ArgonSaltTests() {
             var salt = Argon.CreateSalt();
-            salt.Should().NotBeNull()
-                .And.BeOfType(typeof(byte[]));
+            salt.ShouldSatisfyAllConditions(
+                () => salt.ShouldNotBeNull(),
+                () => salt.ShouldBeOfType<byte[]>()
+            );
 
         }
 
@@ -60,9 +64,11 @@ namespace UnitTests
         {
             var salt = Argon.CreateSalt();
             var hashedPassword = Argon.CreateHashPassword("Password123", salt);
-            hashedPassword.Should().NotBeNull()
-                .And.BeOfType(typeof(byte[]))
-                .And.HaveCount(32);
+            hashedPassword.ShouldSatisfyAllConditions(
+                () => hashedPassword.ShouldNotBeNull(),
+                () => hashedPassword.ShouldBeOfType<byte[]>(),
+                () => hashedPassword.Length.ShouldBe(32)
+                );
 
         }
 
@@ -73,7 +79,7 @@ namespace UnitTests
             var salt = Argon.CreateSalt();
             var hashedPassword = Argon.CreateHashPassword("Password123", salt);
             var result = Argon.MatchPassword(password, Convert.ToHexString(hashedPassword), Convert.ToHexString(salt));
-            result.Should().Be(expectedResult);
+            result.ShouldBe(expectedResult);
         }
     }
 }
