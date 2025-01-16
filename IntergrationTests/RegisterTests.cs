@@ -25,7 +25,7 @@ namespace IntergrationTests
                 renteredPassword = "Testing123"
             };
 
-            var response = await "https://localhost:443"
+            var response = await Settings.GetSUT()
                             .AppendPathSegment("api/authentication/register")
                             .PostJsonAsync(request)
                             .ReceiveJson<Authentication.Json.Responses.RegisterResponse>();
