@@ -26,7 +26,7 @@ namespace IntergrationTests
                 
             };
 
-            var response = await "https://localhost:443"
+            var response = await Settings.GetSUT()
                             .AppendPathSegment("api/authentication/login")
                             .PostJsonAsync(request)
                             .ReceiveJson<Authentication.Json.Responses.LoginResponse>();

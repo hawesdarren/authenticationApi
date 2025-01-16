@@ -22,7 +22,7 @@ namespace IntergrationTests
 
             };
 
-            var loginResponse = await "https://localhost:443"
+            var loginResponse = await Settings.GetSUT()
                             .AppendPathSegment("api/authentication/login")
                             .PostJsonAsync(loginRequest)
                             .ReceiveJson<Authentication.Json.Responses.LoginResponse>();
@@ -36,7 +36,7 @@ namespace IntergrationTests
                 confirmPassword = "Testing123",
             };
 
-            var response = await "https://localhost:443"
+            var response = await Settings.GetSUT()
                             .AppendPathSegment("api/authentication/change/password")
                             .WithHeader("Authorization", "Bearer " + token)
                             .PostJsonAsync(request)
@@ -58,7 +58,7 @@ namespace IntergrationTests
                 confirmPassword = "Testing123",
             };
 
-            var response = await "https://localhost:443"
+            var response = await Settings.GetSUT()
                             .AppendPathSegment("api/authentication/change/password")
                             .WithHeader("Authorization", "Bearer " + null)
                             .AllowAnyHttpStatus()

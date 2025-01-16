@@ -10,6 +10,7 @@ using System.Net;
 
 namespace UnitTests
 {
+    
     public class LoginTests
     {
         [TestCase("someone@somewhere.co.nz", "Testing123", true)]
@@ -34,7 +35,7 @@ namespace UnitTests
                 );
 
         }
-
+        
         [Test]
         public void PasswordBlockedLoginUserTest()
         {
