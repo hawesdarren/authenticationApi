@@ -4,7 +4,7 @@ using Authentication.Json.Responses;
 using Microsoft.AspNetCore.Identity.Data;
 using Org.BouncyCastle.Bcpg.OpenPgp;
 using static Org.BouncyCastle.Asn1.Cmp.Challenge;
-using FluentAssertions;
+using Shouldly;
 
 namespace UnitTests
 {
@@ -29,8 +29,10 @@ namespace UnitTests
             };
 
             RegisterResponse response = RegisterUser.Register(request);
-            response.Should().NotBeNull();
-            response.Success.Should().Be(expectedResult);
+            response.ShouldSatisfyAllConditions(
+                () => response.ShouldNotBeNull(),
+                () => response.Success.ShouldBe(expectedResult)
+                );
 
         }
 
@@ -47,8 +49,10 @@ namespace UnitTests
 
             RegisterResponse response1 = RegisterUser.Register(request);
             RegisterResponse response2 = RegisterUser.Register(request);
-            response2.Should().NotBeNull();
-            response2.Success.Should().BeFalse();
+            response2.ShouldSatisfyAllConditions(
+                () => response2.ShouldNotBeNull(),
+                () => response2.Success.ShouldBeFalse()
+                );
 
         }
 
@@ -63,8 +67,10 @@ namespace UnitTests
             };
                         
             RegisterResponse response = RegisterUser.Register(request);
-            response.Should().NotBeNull();
-            response.Success.Should().BeFalse();
+            response.ShouldSatisfyAllConditions(
+                () => response.ShouldNotBeNull(),
+                () => response.Success.ShouldBeFalse()
+                );
 
         }
 

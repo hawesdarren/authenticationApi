@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using FluentAssertions;
+using Shouldly;
 using System.Net;
 
 namespace UnitTests
@@ -27,8 +27,11 @@ namespace UnitTests
             };
 
             LoginResponse response = LoginUser.ValidatePassword(request);
-            response.Should().NotBeNull();
-            response.Success.Should().Be(expectedResult);
+            response.ShouldSatisfyAllConditions(
+                () => response.ShouldNotBeNull(),
+                () => response.Success.ShouldBe(expectedResult)
+
+                );
 
         }
 
@@ -53,10 +56,12 @@ namespace UnitTests
             request.password = "Testing123";
             response = LoginUser.ValidatePassword(request);
 
-            response.Should().NotBeNull();
-            response.Success.Should().BeFalse();
-            response.error.Should().Be("PASSWORD_TEMP_BLOCK");
-            response.token.Should().BeNull();
+            response.ShouldSatisfyAllConditions(
+                () => response.ShouldNotBeNull(),
+                () => response.Success.ShouldBeFalse(),
+                () => response.error.ShouldBe("PASSWORD_TEMP_BLOCK"),
+                () => response.token.ShouldBeNullOrEmpty()
+                );
 
         }
     }

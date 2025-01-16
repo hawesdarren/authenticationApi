@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using FluentAssertions;
+using Shouldly;
 using Flurl;
 using Flurl.Http;
 using System.Net;
@@ -30,9 +30,12 @@ namespace IntergrationTests
                             .AppendPathSegment("api/authentication/login")
                             .PostJsonAsync(request)
                             .ReceiveJson<Authentication.Json.Responses.LoginResponse>();
-            response.ToString().Should().NotBeNull();
-            response.Success.Should().BeTrue();
-            response.token.Should().NotBeNullOrEmpty();
+            response.ShouldSatisfyAllConditions(
+                () => response.ToString().ShouldNotBeNullOrEmpty(),
+                () => response.Success.ShouldBeTrue(),
+                () => response.token.ShouldNotBeNullOrEmpty()
+                );
+
         }
               
     }

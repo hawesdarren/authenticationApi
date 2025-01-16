@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Authentication.Application;
-using FluentAssertions;
+using Shouldly;
 
 namespace UnitTests
 {
@@ -23,7 +23,7 @@ namespace UnitTests
             };
                         
             var result = ChangePassword.Change(request, email);
-            result.Success.Should().Be(expectedResult);
+            result.Success.ShouldBe(expectedResult);
         }
     }
 }

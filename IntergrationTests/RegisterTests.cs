@@ -4,7 +4,7 @@ using Authentication.Json.Responses;
 using Microsoft.AspNetCore.Identity.Data;
 using Org.BouncyCastle.Bcpg.OpenPgp;
 using static Org.BouncyCastle.Asn1.Cmp.Challenge;
-using FluentAssertions;
+using Shouldly;
 using Flurl;
 using Flurl.Http;
 
@@ -29,10 +29,11 @@ namespace IntergrationTests
                             .AppendPathSegment("api/authentication/register")
                             .PostJsonAsync(request)
                             .ReceiveJson<Authentication.Json.Responses.RegisterResponse>();
-            response.ToString().Should().NotBeNull();
-            response.Success.Should().BeTrue();
-            response.token.Should().NotBeNullOrEmpty();
-
+            response.ShouldSatisfyAllConditions(
+                () => response.ToString().ShouldNotBeNullOrEmpty(),
+                () => response.Success.ShouldBeTrue(),
+                () => response.token.ShouldNotBeNullOrEmpty()
+                );
         }
 
         
