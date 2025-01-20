@@ -1,8 +1,7 @@
 services:
-  dotnet-test:
+  authentication-api-unit-test:
     image: mcr.microsoft.com/dotnet/sdk:8.0
     container_name: authentication-api-unit-test
-    network_mode: "host"
     volumes:
       - .:/app
     working_dir: /app

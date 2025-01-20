@@ -2,6 +2,8 @@ services:
   dotnet-test:
     image: mcr.microsoft.com/dotnet/sdk:8.0
     container_name: authentication-api-integration-test
+    secrets:
+      - auth-secret
     network_mode: "host"
     volumes:
       - .:/app
