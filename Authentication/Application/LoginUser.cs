@@ -73,7 +73,7 @@ namespace Authentication.Application
             if (isPasswordValid)
             {
                 loginResponse.Success = true;
-                loginResponse.token = Token.GenerateJwtToken(loginRequest.email);
+                loginResponse.token = Token.GenerateJwtToken(loginRequest.email, false);
             }
             else {
                 loginResponse.Success = false;

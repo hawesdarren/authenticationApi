@@ -60,6 +60,20 @@ namespace Authentication.Controllers
         
         }
 
+        [Authorize(Policy = "Email")]
+        [HttpPost]
+        [Route("tfa/register")]
+        public IActionResult TfaRegister()
+        {
+            var idendity = User.Identity as ClaimsIdentity;
+            var uriTotp = Tfa.CreateNewTotp(idendity.FindFirst(ClaimTypes.Email).Value);
+            TfaRegisterResponse tfaRegisterResponse = new() { Success = false };
+            tfaRegisterResponse.keyUri = uriTotp.ToString();
+
+            return Ok(tfaRegisterResponse);
+
+        }
+
         [HttpGet]
         [Route("health")]
         public IActionResult Health()
