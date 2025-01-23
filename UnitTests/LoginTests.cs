@@ -48,6 +48,7 @@ namespace UnitTests
 
             LoginResponse response =  new() { 
                 Success = true,
+                Authenticated = false
             };
             // Lock the password for the user
             for (int i = 0; i <= 6; i++) {
