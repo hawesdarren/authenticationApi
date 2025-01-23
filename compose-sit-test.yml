@@ -1,0 +1,13 @@
+services:
+  dotnet-test:
+    image: mcr.microsoft.com/dotnet/sdk:8.0
+    container_name: authentication-api-integration-test
+    secrets:
+      - auth-secret
+    network_mode: "host"
+    volumes:
+      - .:/app
+    working_dir: /app
+    environment:
+      - SUT=https://192.168.1.137:443
+    command: [ "dotnet", "test", "--filter", "FullyQualifiedName=IntergrationTests", "--logger:trx", "--logger:html" ]

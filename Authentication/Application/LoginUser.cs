@@ -24,7 +24,7 @@ namespace Authentication.Application
 
         public static LoginResponse ValidatePassword(LoginRequest loginRequest) {
             // This is main process for validating login creds
-            LoginResponse loginResponse = new() { Success = false};
+            LoginResponse loginResponse = new() { Success = false, Authenticated = false};
             // Email format check
             var isEmailFormatValid = EmailValidation.ValidateFormat(loginRequest.email);
             if (!isEmailFormatValid) { 
@@ -42,7 +42,7 @@ namespace Authentication.Application
                 return loginResponse;
             }
             // Is Password in a Temporary block (not this is not a temp password but a temporary block due to max login attempts)
-            var isTempBlock = PasswordValidation.IsTemporaryBlockedPassword(loginRequest.email);
+             var isTempBlock = PasswordValidation.IsTemporaryBlockedPassword(loginRequest.email);
             if (isTempBlock) {
                 loginResponse.Success = false;
                 loginResponse.SetError(LoginResponse.Error.PASSWORD_TEMP_BLOCK);

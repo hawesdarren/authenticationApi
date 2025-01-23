@@ -5,6 +5,16 @@ VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Authentication", "Authentication\Authentication.csproj", "{B769852E-1F67-4B53-98A1-968331B2D3BA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{92040A45-BFBC-410F-8426-56603962BD18}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B769852E-1F67-4B53-98A1-968331B2D3BA} = {B769852E-1F67-4B53-98A1-968331B2D3BA}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntergrationTests", "IntergrationTests\IntergrationTests.csproj", "{20696DEB-C37B-4A7E-8AC7-D7A798B6E705}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B769852E-1F67-4B53-98A1-968331B2D3BA} = {B769852E-1F67-4B53-98A1-968331B2D3BA}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +25,14 @@ Global
 		{B769852E-1F67-4B53-98A1-968331B2D3BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B769852E-1F67-4B53-98A1-968331B2D3BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B769852E-1F67-4B53-98A1-968331B2D3BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92040A45-BFBC-410F-8426-56603962BD18}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92040A45-BFBC-410F-8426-56603962BD18}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92040A45-BFBC-410F-8426-56603962BD18}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92040A45-BFBC-410F-8426-56603962BD18}.Release|Any CPU.Build.0 = Release|Any CPU
+		{20696DEB-C37B-4A7E-8AC7-D7A798B6E705}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20696DEB-C37B-4A7E-8AC7-D7A798B6E705}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20696DEB-C37B-4A7E-8AC7-D7A798B6E705}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20696DEB-C37B-4A7E-8AC7-D7A798B6E705}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

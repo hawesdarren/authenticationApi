@@ -25,7 +25,7 @@ namespace Authentication.Controllers
         [Route("login")]
         public IActionResult Login([FromBody] Json.Requests.LoginRequest loginRequest)
         {
-            LoginResponse loginResponse = new() { Success = false };
+            LoginResponse loginResponse = new() { Success = false, Authenticated = false };
             loginResponse = LoginUser.ValidatePassword(loginRequest);
             if (!loginResponse.Success) {
                 _logger.LogInformation($"Login unsuccessful: {loginResponse.GetError}");
@@ -55,7 +55,9 @@ namespace Authentication.Controllers
 
             ChangePasswordResponse changePasswordResponse = new ChangePasswordResponse();
             changePasswordResponse = Application.ChangePassword.Change(changePasswordRequest, idendity.FindFirst(ClaimTypes.Email).Value);
-   
+            if (!changePasswordResponse.Success) {
+                _logger.LogInformation($"Change password unsuccessful: {changePasswordResponse.error}");
+            }
             return Ok(changePasswordResponse);
         
         }
@@ -67,10 +69,24 @@ namespace Authentication.Controllers
         {
             var idendity = User.Identity as ClaimsIdentity;
             var uriTotp = Tfa.CreateNewTotp(idendity.FindFirst(ClaimTypes.Email).Value);
-            TfaRegisterResponse tfaRegisterResponse = new() { Success = false };
-            tfaRegisterResponse.keyUri = uriTotp.ToString();
-
+            TfaRegisterResponse tfaRegisterResponse = new() { Success = false, Authenticated = false };
+            tfaRegisterResponse.keyUri = uriTotp.keyUri;
+            if (!tfaRegisterResponse.Success) {
+                _logger.LogInformation($"TFA Register unsuccessful: {tfaRegisterResponse.error}");
+            }
             return Ok(tfaRegisterResponse);
+
+        }
+
+        [Authorize(Policy = "Email")]
+        [HttpPost]
+        [Route("tfa/validate")]
+        public IActionResult TfaValidate([FromBody]Json.Requests.ValidateTfa validateTfaRequest)
+        {
+            var idendity = User.Identity as ClaimsIdentity;
+            
+            TfaValidateResponse tfaValidateResponse = new() { Success = false, Authenticated =false };
+            return Ok(tfaValidateResponse);
 
         }
 
