@@ -24,7 +24,7 @@ namespace Authentication.Application
 
         public static LoginResponse ValidatePassword(LoginRequest loginRequest) {
             // This is main process for validating login creds
-            LoginResponse loginResponse = new() { Success = false};
+            LoginResponse loginResponse = new() { Success = false, Authenticated = false};
             // Email format check
             var isEmailFormatValid = EmailValidation.ValidateFormat(loginRequest.email);
             if (!isEmailFormatValid) { 
@@ -73,7 +73,7 @@ namespace Authentication.Application
             if (isPasswordValid)
             {
                 loginResponse.Success = true;
-                loginResponse.token = Token.GenerateJwtToken(loginRequest.email);
+                loginResponse.token = Token.GenerateJwtToken(loginRequest.email, false);
             }
             else {
                 loginResponse.Success = false;

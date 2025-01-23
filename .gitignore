@@ -12,8 +12,16 @@
 /IntergrationTests/bin/Debug/net8.0
 /IntergrationTests/obj/Debug/net8.0
 /IntergrationTests/obj
+<<<<<<< HEAD
+/IntergrationTests/TestResults
+/Performance/results.csv
+/UnitTests/bin/Debug/net8.0
+/UnitTests/obj/Debug/net8.0
+/UnitTests/obj
+=======
 /UnitTests/bin/Debug/net8.0
 /UnitTests/obj
 /Performance/results.csv
 /IntergrationTests/TestResults
+>>>>>>> main
 /UnitTests/TestResults

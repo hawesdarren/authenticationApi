@@ -9,6 +9,8 @@ namespace Authentication.Json.Responses
     {
         [JsonPropertyName("success")]
         public required bool Success { get; set; } = false;
+        [JsonPropertyName("authenticated")]
+        public required bool Authenticated { get; set; } = false;
         [JsonPropertyName("error")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? error { get; set; }

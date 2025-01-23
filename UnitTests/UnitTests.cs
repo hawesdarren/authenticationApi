@@ -41,7 +41,7 @@ namespace UnitTests
 
         [TestCase("someone@somewhere.com")]
         public void CreateTokenTest(string email) {
-            var result = Token.GenerateJwtToken(email);
+            var result = Token.GenerateJwtToken(email, true);
             result.ShouldSatisfyAllConditions(
                 () => result.ShouldNotBeNullOrEmpty(),
                 () => result.ShouldBeOfType<string>()

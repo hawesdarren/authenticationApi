@@ -10,7 +10,7 @@ namespace Authentication.Application
     public class Token
     {
                 
-        public static string GenerateJwtToken(string email)
+        public static string GenerateJwtToken(string email, bool authentication)
         {
             
             //var config = new ConfigurationBuilder().AddUserSecrets<Program>().AddJsonFile("secrets.json", optional: true).Build();
@@ -31,7 +31,7 @@ namespace Authentication.Application
                 issuer: config["authentication:validIssuer"],
                 audience: config["authentication:validAudience"],
                 claims: new List<Claim> {
-                    //new Claim("Email", email),
+                    new Claim(ClaimTypes.Authentication, authentication.ToString()),
                     new Claim(ClaimTypes.Email, email),
                 },
                 expires: DateTime.Now.AddMinutes(60),
