@@ -21,7 +21,7 @@ namespace UnitTests
         [TestCase("testing123", "testing123", false)]
         public void RegisterUserTest(string password, string rentteredPassword,bool expectedResult)
         {
-            string email = RandonString() + "@somewhere.com";
+            string email = Tools.RandonString() + "@somewhere.com";
             Authentication.Json.Requests.RegisterRequest request = new()  { 
                 email = email,
                 password = password,
@@ -39,7 +39,7 @@ namespace UnitTests
         [Test]
         public void AlreadyRegisteredUserTest()
         {
-            string email = RandonString() + "@somewhere.com";
+            string email = Tools.RandonString() + "@somewhere.com";
             Authentication.Json.Requests.RegisterRequest request = new()
             {
                 email = email,
@@ -74,26 +74,5 @@ namespace UnitTests
 
         }
 
-        private string RandonString() { 
-            Random random = new Random();
-            int stringlen = random.Next(7, 14);
-            int randValue;
-            string str = "";
-            char letter;
-            for (int i = 0; i < stringlen; i++)
-            {
-
-                // Generating a random number. 
-                randValue = random.Next(0, 26);
-
-                // Generating random character by converting 
-                // the random number into character. 
-                letter = Convert.ToChar(randValue + 65);
-
-                // Appending the letter to string. 
-                str = str + letter;
-            }
-            return str;
-        }
     }
 }

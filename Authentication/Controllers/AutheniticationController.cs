@@ -48,6 +48,7 @@ namespace Authentication.Controllers
 
         }
         [Authorize(Policy = "Email")]
+        [Authorize(Policy = "Authentication")]
         [HttpPost]
         [Route("change/password")]
         public IActionResult ChangePassword([FromBody] Json.Requests.ChangePasswordRequest changePasswordRequest) {
@@ -63,14 +64,14 @@ namespace Authentication.Controllers
         }
 
         [Authorize(Policy = "Email")]
+        [Authorize(Policy = "Authentication")]
         [HttpPost]
         [Route("tfa/register")]
         public IActionResult TfaRegister()
         {
             var idendity = User.Identity as ClaimsIdentity;
-            var uriTotp = Tfa.CreateNewTotp(idendity.FindFirst(ClaimTypes.Email).Value);
-            TfaRegisterResponse tfaRegisterResponse = new() { Success = false, Authenticated = false };
-            tfaRegisterResponse.keyUri = uriTotp.keyUri;
+            TfaRegisterResponse tfaRegisterResponse = Tfa.CreateNewTotp(idendity.FindFirst(ClaimTypes.Email).Value);
+            tfaRegisterResponse.Authenticated = Convert.ToBoolean(idendity.FindFirst(ClaimTypes.Authentication).Value);   
             if (!tfaRegisterResponse.Success) {
                 _logger.LogInformation($"TFA Register unsuccessful: {tfaRegisterResponse.error}");
             }
@@ -84,9 +85,29 @@ namespace Authentication.Controllers
         public IActionResult TfaValidate([FromBody]Json.Requests.ValidateTfa validateTfaRequest)
         {
             var idendity = User.Identity as ClaimsIdentity;
-            
-            TfaValidateResponse tfaValidateResponse = new() { Success = false, Authenticated =false };
+            string email = idendity.FindFirst(ClaimTypes.Email).Value;
+            TfaValidateResponse tfaValidateResponse =  Tfa.Validate(email, validateTfaRequest.tfaCode);
+            if (!tfaValidateResponse.Success) { 
+                _logger.LogInformation($"TFA Validate unsuccessful: {tfaValidateResponse.error}");
+            }
             return Ok(tfaValidateResponse);
+
+        }
+
+        [Authorize(Policy = "Email")]
+        [HttpPost]
+        [Route("tfa/enable")]
+        public IActionResult EnableTfa([FromBody] Json.Requests.EnableTfa enableTfaRequest)
+        {
+            var idendity = User.Identity as ClaimsIdentity;
+            string email = idendity.FindFirst(ClaimTypes.Email).Value;
+            BaseResponse enbleTfaResponse = Tfa.EnableTfa(email, enableTfaRequest.enableTfa, enableTfaRequest.totp);
+            if (!enbleTfaResponse.Success) {
+                _logger.LogInformation($"TFA enable unsuccessful: {enbleTfaResponse.error}");
+            }
+            // todo
+            return Ok(enbleTfaResponse);
+      
 
         }
 

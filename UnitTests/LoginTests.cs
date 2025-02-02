@@ -13,11 +13,11 @@ namespace UnitTests
     
     public class LoginTests
     {
-        [TestCase("someone@somewhere.co.nz", "Testing123", true)]
-        [TestCase("someone@somewhere.co.nz", "Testing1234", false)]
-        [TestCase("noone@somewhere.co.nz", "Testing123", false)]
-        [TestCase("@somewhere.co.nz", "Testing123", false)]
-        public void LoginUserTest(string email, string password, bool expectedResult)
+        [TestCase("someone@somewhere.co.nz", "Testing123", true, true)]
+        [TestCase("someone@somewhere.co.nz", "Testing1234", false, false)]
+        [TestCase("noone@somewhere.co.nz", "Testing123", false, false)]
+        [TestCase("@somewhere.co.nz", "Testing123", false, false)]
+        public void LoginUserTest(string email, string password, bool success, bool authenticated)
         {
             
             Authentication.Json.Requests.LoginRequest request = new()
@@ -30,8 +30,8 @@ namespace UnitTests
             LoginResponse response = LoginUser.ValidatePassword(request);
             response.ShouldSatisfyAllConditions(
                 () => response.ShouldNotBeNull(),
-                () => response.Success.ShouldBe(expectedResult)
-
+                () => response.Success.ShouldBe(success),
+                () => Convert.ToBoolean(response.Authenticated).ShouldBe(authenticated)
                 );
 
         }
@@ -65,6 +65,30 @@ namespace UnitTests
                 () => response.token.ShouldBeNullOrEmpty()
                 );
 
+        }
+
+        [TestCase("someone4@somewhere.co.nz", "Testing123", true)]
+        [TestCase("someone5@somewhere.co.nz", "Testing123", false)]
+        public void LoginTfaEnabled(string email, string password, bool tfaEnabled) {
+            Authentication.Json.Requests.LoginRequest request = new()
+            {
+                email = email,
+                password = password,
+
+            };
+
+            LoginResponse response = new()
+            {
+                Success = true,
+                Authenticated = false
+            };
+
+            response = LoginUser.ValidatePassword(request);
+            response.ShouldSatisfyAllConditions(
+               () => response.ShouldNotBeNull(),
+               () => response.Success.ShouldBeTrue(),
+               () => response.tfaEnabled.ShouldBe(tfaEnabled)
+               );
         }
     }
 }

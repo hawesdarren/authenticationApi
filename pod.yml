@@ -26,7 +26,7 @@ spec:
           readOnly: true
         livenessProbe:
           httpGet:
-            path: /health
+            path: api/authentication/health
             port: 8080
           initialDelaySeconds: 10
           periodSeconds: 10
