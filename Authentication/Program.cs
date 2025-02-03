@@ -45,7 +45,7 @@ builder.Services.AddAuthentication(options =>
 // Authorization
 builder.Services.AddAuthorization(options =>
 {
-    //options.AddPolicy("Email", policy => policy.RequireClaim("Email"));
+    options.AddPolicy("Authentication", policy => policy.RequireClaim(ClaimTypes.Authentication));
     options.AddPolicy("Email", policy => policy.RequireClaim(ClaimTypes.Email));
 });
 

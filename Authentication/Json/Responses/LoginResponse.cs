@@ -10,7 +10,8 @@ namespace Authentication.Json.Responses
         public bool? tempPassword { get; set; } = false;
         [JsonPropertyName("token")]
         public string? token { get; set; }
-        
+        [JsonPropertyName("tfaEnabled")]
+        public bool? tfaEnabled { get; set; }
         public LoginResponse() { 
             Success = false;
         }      

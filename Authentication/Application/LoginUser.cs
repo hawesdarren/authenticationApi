@@ -72,13 +72,27 @@ namespace Authentication.Application
             bool isPasswordValid = PasswordValidation.ValidatePasswordMatch(loginRequest.email, loginRequest.password);
             if (isPasswordValid)
             {
-                loginResponse.Success = true;
-                loginResponse.token = Token.GenerateJwtToken(loginRequest.email, false);
+                // Check if tfa is enabled
+                var isTfaEnable = Tfa.IsTfaEnabled(loginRequest.email);
+                if (isTfaEnable)
+                {
+                    loginResponse.Success = true;
+                    loginResponse.token = Token.GenerateJwtToken(loginRequest.email, false);
+                    loginResponse.tfaEnabled = true;
+                    loginResponse.Authenticated = false;
+                }
+                else {
+                    loginResponse.Success = true;
+                    loginResponse.token = Token.GenerateJwtToken(loginRequest.email, true);
+                    loginResponse.tfaEnabled = false;
+                    loginResponse.Authenticated = true;
+                }
+                
             }
             else {
                 loginResponse.Success = false;
                 loginResponse.SetError(LoginResponse.Error.INVALID);
-                //loginResponse.error = "Invalid email or password";
+                loginResponse.Authenticated = false;
 
             }
             return loginResponse;

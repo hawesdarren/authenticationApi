@@ -2,6 +2,6 @@
 {
     public class ValidateTfa
     {
-        public required int tfaCode {  get; set; }
+        public required string tfaCode {  get; set; }
     }
 }
