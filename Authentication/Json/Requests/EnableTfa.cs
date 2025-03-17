@@ -3,6 +3,6 @@
     public class EnableTfa
     {
         public bool enableTfa {  get; set; }
-        public string totp { get; set; }
+        public string tfaCode { get; set; }
     }
 }
