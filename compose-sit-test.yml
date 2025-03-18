@@ -1,5 +1,5 @@
 services:
-  dotnet-test:
+  authentication-api-integration-test:
     image: mcr.microsoft.com/dotnet/sdk:8.0
     container_name: authentication-api-integration-test
     network_mode: "host"
