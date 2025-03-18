@@ -9,7 +9,7 @@ using Flurl;
 using Flurl.Http;
 
 
-namespace IntergrationTests
+namespace IntegrationTests
 {
     public class RegisterTests : CustomClientFactory
     {

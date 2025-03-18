@@ -8,7 +8,7 @@ using Shouldly;
 using Flurl;
 using Flurl.Http;
 
-namespace IntergrationTests
+namespace IntegrationTests
 {
     public class ChangePasswordTests : CustomClientFactory
     {

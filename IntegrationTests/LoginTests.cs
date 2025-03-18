@@ -11,7 +11,7 @@ using Flurl.Http;
 using System.Net;
 
 
-namespace IntergrationTests
+namespace IntegrationTests
 {
     public class LoginTests : CustomClientFactory
     {

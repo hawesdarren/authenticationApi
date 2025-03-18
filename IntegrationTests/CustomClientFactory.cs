@@ -11,7 +11,7 @@ using Flurl.Http;
 using Microsoft.Extensions.Http;
 
 
-namespace IntergrationTests
+namespace IntegrationTests
 {
     public class CustomClientFactory
     {
