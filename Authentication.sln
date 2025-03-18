@@ -10,7 +10,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\Unit
 		{B769852E-1F67-4B53-98A1-968331B2D3BA} = {B769852E-1F67-4B53-98A1-968331B2D3BA}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTests", "IntergrationTests\IntegrationTests.csproj", "{20696DEB-C37B-4A7E-8AC7-D7A798B6E705}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTests", "IntegrationTests\IntegrationTests.csproj", "{20696DEB-C37B-4A7E-8AC7-D7A798B6E705}"
 	ProjectSection(ProjectDependencies) = postProject
 		{B769852E-1F67-4B53-98A1-968331B2D3BA} = {B769852E-1F67-4B53-98A1-968331B2D3BA}
 	EndProjectSection
