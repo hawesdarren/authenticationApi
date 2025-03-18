@@ -9,4 +9,4 @@ services:
     working_dir: /app
     environment:
       - SUT=https://192.168.1.137:443
-    command: [ "dotnet", "test", "--filter", "FullyQualifiedName=IntergrationTests", "--logger:trx", "--logger:html" ]
+    command: [ "dotnet", "test", "--filter", "FullyQualifiedName=IntegrationTests", "--logger:trx", "--logger:html" ]
