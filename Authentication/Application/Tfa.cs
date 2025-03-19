@@ -187,12 +187,12 @@ namespace Authentication.Application
             return result;
         }
 
-        public static BaseResponse EnableTfa(string email, bool register, string? totp) {
+        public static EnableTfaResponse EnableTfa(string email, bool register, string? totp) {
             bool result = false;
             // To enable tfa valid totp must be supplied 
             // To disable totp not required
-            
-            BaseResponse baseResponse = new()
+
+            EnableTfaResponse enableTfaResponse = new()
             {
                 Authenticated = true,
                 Success = result
@@ -200,8 +200,10 @@ namespace Authentication.Application
 
             // Check for valid totp 
             TfaValidateResponse tfaValidateResponse = Validate(email, totp);
-            if (tfaValidateResponse.Success == false) { 
-                return baseResponse;
+            if (tfaValidateResponse.Success == false) {
+                enableTfaResponse.Success = false;
+                enableTfaResponse.SetError(Json.Enums.ErrorEnums.Error.TFA_CODE_INVALID);
+                return enableTfaResponse;
             }
 
             // Convert bool to int for SQL query
@@ -227,18 +229,18 @@ namespace Authentication.Application
                 if (isSuccessful != 0)
                 {
                     result = true;
-                    baseResponse.Success = result;
+                    enableTfaResponse.Success = result;
                 }
-                else { 
-                    baseResponse.SetError(Json.Enums.ErrorEnums.Error.TFA_ERROR);
+                else {
+                    enableTfaResponse.SetError(Json.Enums.ErrorEnums.Error.TFA_ERROR);
                 }
             }
-            else { 
-                baseResponse.SetError(Json.Enums.ErrorEnums.Error.EMAIL_NOT_REGISTERED_FOR_TFA);
+            else {
+                enableTfaResponse.SetError(Json.Enums.ErrorEnums.Error.EMAIL_NOT_REGISTERED_FOR_TFA);
             }
             
 
-            return baseResponse;
+            return enableTfaResponse;
         }
 
     }

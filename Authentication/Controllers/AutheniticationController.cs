@@ -101,11 +101,10 @@ namespace Authentication.Controllers
         {
             var idendity = User.Identity as ClaimsIdentity;
             string email = idendity.FindFirst(ClaimTypes.Email).Value;
-            BaseResponse enbleTfaResponse = Tfa.EnableTfa(email, enableTfaRequest.enableTfa, enableTfaRequest.tfaCode);
+            EnableTfaResponse enbleTfaResponse = Tfa.EnableTfa(email, enableTfaRequest.enableTfa, enableTfaRequest.tfaCode);
             if (!enbleTfaResponse.Success) {
                 _logger.LogInformation($"TFA enable unsuccessful: {enbleTfaResponse.error}");
             }
-            // todo
             return Ok(enbleTfaResponse);
       
 
