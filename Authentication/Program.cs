@@ -53,7 +53,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("CorsPolicy", policy =>
     {
-        policy.WithOrigins("https://hawes.co.nz", "https://192.168.1.137", "https://192.168.164.129")
+        policy.WithOrigins("https://hawes.co.nz", "https://192.168.1.137:443", "https://192.168.164.129:443")
         .AllowAnyHeader()
         .AllowAnyMethod();
     });
