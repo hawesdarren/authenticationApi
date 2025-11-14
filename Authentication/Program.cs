@@ -48,6 +48,16 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("Authentication", policy => policy.RequireClaim(ClaimTypes.Authentication));
     options.AddPolicy("Email", policy => policy.RequireClaim(ClaimTypes.Email));
 });
+// CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsPolicy", policy =>
+    {
+        policy.WithOrigins("https://hawes.co.nz", "https://192.168.1.137", "https://192.168.164.129")
+        .AllowAnyHeader()
+        .AllowAnyMethod();
+    });
+});
 
 var app = builder.Build();
 
@@ -65,5 +75,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseExceptionHandler("/Error");
 app.MapControllers();
-
+//Enable CORS
+app.UseCors("CorsPolicy");
 app.Run();

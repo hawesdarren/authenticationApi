@@ -77,16 +77,20 @@ namespace Authentication.Application
                 if (isTfaEnable)
                 {
                     loginResponse.Success = true;
-                    loginResponse.token = Token.GenerateJwtToken(loginRequest.email, false);
+                    loginResponse.token = Token.GenerateJwtToken(loginRequest.email, false, 10);
                     loginResponse.tfaEnabled = true;
                     loginResponse.Authenticated = false;
                 }
                 else {
                     loginResponse.Success = true;
-                    loginResponse.token = Token.GenerateJwtToken(loginRequest.email, true);
+                    loginResponse.token = Token.GenerateJwtToken(loginRequest.email, true, 10);
+                    loginResponse.refreshToken = Token.GenerateJwtToken(loginRequest.email, true, 600);
                     loginResponse.tfaEnabled = false;
                     loginResponse.Authenticated = true;
                 }
+                // Get expiry from token and add to response
+                var expTime = Token.GetExpiryFromToken(loginResponse.token);
+                loginResponse.expiry = expTime;
                 
             }
             else {

@@ -6,5 +6,7 @@ namespace Authentication.Json.Responses
     {
         [JsonPropertyName("token")]
         public string? token { get; set; }
+        [JsonPropertyName("refreshToken")]
+        public string? refreshToken { get; set; }
     }
 }
