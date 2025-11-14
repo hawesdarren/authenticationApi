@@ -10,6 +10,10 @@ namespace Authentication.Json.Responses
         public bool? tempPassword { get; set; } = false;
         [JsonPropertyName("token")]
         public string? token { get; set; }
+        [JsonPropertyName("refreshToken")]
+        public string? refreshToken { get; set; }
+        [JsonPropertyName("expiry")]
+        public long? expiry { get; set; }
         [JsonPropertyName("tfaEnabled")]
         public bool? tfaEnabled { get; set; }
         public LoginResponse() { 

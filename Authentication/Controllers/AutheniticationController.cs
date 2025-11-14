@@ -106,7 +106,19 @@ namespace Authentication.Controllers
                 _logger.LogInformation($"TFA enable unsuccessful: {enbleTfaResponse.error}");
             }
             return Ok(enbleTfaResponse);
-      
+
+        }
+
+        
+        [Route("token/refresh")]
+        public IActionResult RefreshToken()
+        { 
+            //var identity = User.Identity as ClaimsIdentity;
+            //string email = identity.FindFirst(ClaimTypes.Email).Value;
+            string newToken = Token.RefreshToken(email, true, 10);
+            RefreshTokenResponse refreshTokenResponse = new RefreshTokenResponse { Authenticated = true, Success = true };
+            refreshTokenResponse.token = newToken;
+            return Ok(refreshTokenResponse);
 
         }
 
