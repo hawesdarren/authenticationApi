@@ -74,7 +74,7 @@ app.UseAuthentication();
 // Important Authorization must be below Authentication
 app.UseAuthorization();
 app.UseExceptionHandler("/Error");
-app.MapControllers();
 //Enable CORS
 app.UseCors("CorsPolicy");
+app.MapControllers();
 app.Run();
