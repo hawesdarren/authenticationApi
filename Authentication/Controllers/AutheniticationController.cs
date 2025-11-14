@@ -113,9 +113,10 @@ namespace Authentication.Controllers
         [Route("token/refresh")]
         public IActionResult RefreshToken()
         { 
+            // todo - need to work out what should be in the refresh token and how to store it
             //var identity = User.Identity as ClaimsIdentity;
             //string email = identity.FindFirst(ClaimTypes.Email).Value;
-            string newToken = Token.RefreshToken(email, true, 10);
+            string newToken = Token.GenerateJwtToken("someone@hawes.co.nz", true, 10);
             RefreshTokenResponse refreshTokenResponse = new RefreshTokenResponse { Authenticated = true, Success = true };
             refreshTokenResponse.token = newToken;
             return Ok(refreshTokenResponse);

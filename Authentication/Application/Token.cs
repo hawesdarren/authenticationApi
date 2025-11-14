@@ -42,7 +42,7 @@ namespace Authentication.Application
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        public static string RefreshToken(string email, bool authentication, int timeout) {
+        public static string RefreshToken(int timeout) {
 
             //var config = new ConfigurationBuilder().AddUserSecrets<Program>().AddJsonFile("secrets.json", optional: true).Build();
             var builder = new ConfigurationBuilder().AddUserSecrets<Program>();
