@@ -111,6 +111,7 @@ namespace Authentication.Controllers
 
         
         [Route("token/refresh")]
+        [HttpPost]
         public IActionResult RefreshToken()
         { 
             // todo - need to work out what should be in the refresh token and how to store it

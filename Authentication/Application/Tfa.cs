@@ -35,7 +35,7 @@ namespace Authentication.Application
             if (verify) { 
                 tfaValidateResponse.Success = true;
                 tfaValidateResponse.Authenticated = true;
-                tfaValidateResponse.token = Token.GenerateJwtToken(email, true);
+                tfaValidateResponse.token = Token.GenerateJwtToken(email, true, 10);
                 
             }
             else
