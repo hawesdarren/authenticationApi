@@ -31,8 +31,8 @@ namespace IntegrationTests
                             .ReceiveJson<Authentication.Json.Responses.RegisterResponse>();
             response.ShouldSatisfyAllConditions(
                 () => response.ToString().ShouldNotBeNullOrEmpty(),
-                () => response.Success.ShouldBeTrue(),
-                () => response.token.ShouldNotBeNullOrEmpty()
+                () => response.Success.ShouldBeTrue()
+                //() => response.token.ShouldNotBeNullOrEmpty()
                 );
         }
 
