@@ -53,7 +53,10 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("CorsPolicy", policy =>
     {
-        policy.WithOrigins("https://hawes.co.nz", "https://192.168.1.137:443", "https://192.168.164.129:443")
+        policy.WithOrigins(
+            "https://hawes.co.nz", 
+            "https://192.168.1.137:443", 
+            "http://192.168.164.129:3001")
         .AllowAnyHeader()
         .AllowAnyMethod();
     });
@@ -69,12 +72,12 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+//Enable CORS
+app.UseCors("CorsPolicy");
 app.UseAuthentication();
 // Important Authorization must be below Authentication
 app.UseAuthorization();
 app.UseExceptionHandler("/Error");
-//Enable CORS
-app.UseCors("CorsPolicy");
+
 app.MapControllers();
 app.Run();
