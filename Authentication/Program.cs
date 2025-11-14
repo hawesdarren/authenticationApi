@@ -49,14 +49,15 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("Email", policy => policy.RequireClaim(ClaimTypes.Email));
 });
 // CORS
+
+// Load allowed origins from configuration
+var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("CorsPolicy", policy =>
     {
-        policy.WithOrigins(
-            "https://hawes.co.nz", 
-            "https://192.168.1.137:443", 
-            "http://192.168.164.129:3001")
+        policy.WithOrigins(allowedOrigins)
         .AllowAnyHeader()
         .AllowAnyMethod();
     });
