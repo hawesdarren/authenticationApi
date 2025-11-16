@@ -60,7 +60,8 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins(allowedOrigins)
         .AllowAnyHeader()
-        .AllowAnyMethod();
+        .AllowAnyMethod()
+        .AllowCredentials();
     });
 });
 
@@ -74,12 +75,11 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-//Enable CORS
+//Enable CORS - must come BEFORE routing and BEFORE authentication/authorization
 app.UseCors("CorsPolicy");
 app.UseAuthentication();
 // Important Authorization must be below Authentication
 app.UseAuthorization();
 app.UseExceptionHandler("/Error");
-
 app.MapControllers();
 app.Run();
