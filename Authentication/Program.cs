@@ -17,6 +17,7 @@ foreach (var path in secretFiles) {
 var issuerSigningKey = builder.Configuration["authentication:issuerSigningKey"];
 var validIssuer = builder.Configuration["authentication:validIssuer"];
 var validAudience = builder.Configuration["authentication:validAudience"];
+var allowedOrigins = builder.Configuration["allowedOrigins"];
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -51,7 +52,7 @@ builder.Services.AddAuthorization(options =>
 // CORS
 
 // Load allowed origins from configuration
-var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>();
+//var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>();
 
 builder.Services.AddCors(options =>
 {
