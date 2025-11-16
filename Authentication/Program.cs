@@ -75,7 +75,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 //Enable CORS - The call to UseCors must be placed after UseRouting, but before UseAuthorization
-app.UseCors("CorsPolicy");
+app.UseCors(AllowedSpecificOrigins);
 app.UseAuthentication();
 // Important Authorization must be after Authentication
 app.UseAuthorization();
