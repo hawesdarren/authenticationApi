@@ -8,5 +8,5 @@ services:
       - /home/darren/authentication:/app/Authentication/secrets
     working_dir: /app
     environment:
-      - SUT=https://192.168.1.137:443
+      - SUT=https://192.168.68.58:443
     command: [ "dotnet", "test", "--filter", "FullyQualifiedName=IntegrationTests", "--logger:trx", "--logger:html" ]
