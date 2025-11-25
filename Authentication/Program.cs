@@ -8,7 +8,6 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
-var AllowedSpecificOrigins = "_allowedSpecificOrigins";
 var secretFiles = Directory.EnumerateFiles(".", "secrets.json", SearchOption.AllDirectories);
 foreach (var path in secretFiles) { 
     builder.Configuration.AddJsonFile(path);
@@ -17,7 +16,6 @@ foreach (var path in secretFiles) {
 var issuerSigningKey = builder.Configuration["authentication:issuerSigningKey"];
 var validIssuer = builder.Configuration["authentication:validIssuer"];
 var validAudience = builder.Configuration["authentication:validAudience"];
-var allowedOrigins = builder.Configuration["allowedOrigins"];
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -49,20 +47,6 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("Authentication", policy => policy.RequireClaim(ClaimTypes.Authentication));
     options.AddPolicy("Email", policy => policy.RequireClaim(ClaimTypes.Email));
 });
-// CORS
-
-// Load allowed origins from configuration
-//var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>();
-
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy(name: AllowedSpecificOrigins, policy =>
-    {
-        policy.WithOrigins(allowedOrigins)
-        .AllowAnyHeader()
-        .AllowAnyMethod();
-    });
-});
 
 var app = builder.Build();
 
@@ -74,8 +58,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-//Enable CORS - The call to UseCors must be placed after UseRouting, but before UseAuthorization
-app.UseCors(AllowedSpecificOrigins);
 app.UseAuthentication();
 // Important Authorization must be after Authentication
 app.UseAuthorization();
