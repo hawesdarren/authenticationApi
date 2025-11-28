@@ -25,3 +25,8 @@
 /IntergrationTests/TestResults
 >>>>>>> main
 /UnitTests/TestResults
+/IntegrationTests/bin/Debug/net8.0
+/IntegrationTests/obj/Debug/net8.0
+/IntegrationTests/TestResults
+/IntegrationTests/obj
+/secrets.json

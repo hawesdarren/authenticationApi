@@ -69,6 +69,7 @@ namespace Authentication.Application
             {
                 registerResponse.Success = true;
                 registerResponse.Authenticated = false;
+                registerResponse.token = Token.GenerateJwtToken(registerRequest.email, false, 10);
                 return registerResponse;
             }
             else
