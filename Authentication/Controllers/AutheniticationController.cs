@@ -64,7 +64,7 @@ namespace Authentication.Controllers
         }
 
         [Authorize(Policy = "Email")]
-        [Authorize(Policy = "Authentication")]
+        //[Authorize(Policy = "Authentication")] // Allow unathenticated users to register TFA
         [HttpPost]
         [Route("tfa/register")]
         public IActionResult TfaRegister()
