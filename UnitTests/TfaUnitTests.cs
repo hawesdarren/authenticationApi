@@ -23,7 +23,7 @@ namespace UnitTests
         public void GenerateTotp(string email)
         {
             // Email must be registerd to create a totp 
-            TfaRegisterResponse response = Tfa.CreateNewTotp(email);
+            TfaRegisterResponse response = Tfa.CreateNewTotp(email, "test-issuer");
             response.ShouldSatisfyAllConditions(
                 () => response.ShouldNotBeNull(),
                 () => response.Success.ShouldBeTrue()
