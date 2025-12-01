@@ -9,13 +9,13 @@ namespace Authentication.Application
 {
     public class Tfa : DatabaseConnector
     {
-        public static TfaRegisterResponse CreateNewTotp(string email) {
+        public static TfaRegisterResponse CreateNewTotp(string email, string issuer) {
 
             var key = KeyGeneration.GenerateRandomKey(20);
             var base32String = Base32Encoding.ToString(key);
             // Store in database
             bool result = RegisterTotpInDatabase(email, base32String);
-            var uriTotp = new OtpUri(OtpType.Totp, base32String, email, "hawes.co.nz").ToString();
+            var uriTotp = new OtpUri(OtpType.Totp, base32String, email, issuer).ToString();
             // Response 
             TfaRegisterResponse tfaRegisterResponse = new() { Success = result, Authenticated = false };
             tfaRegisterResponse.keyUri = uriTotp;
@@ -52,7 +52,7 @@ namespace Authentication.Application
             StringBuilder query = new StringBuilder();
             query.Append("SELECT tfa.key  ");
             query.Append("FROM Authentication.tfa ");
-            query.Append("INNER JOIN Authentication.users ON tfa.idUsers=users.idUsers ");
+            query.Append("INNER JOIN Authentication.users ON tfa.idUsers=users.id");
             query.Append($"WHERE users.email = '{email}';");
             // Database connection
             MySqlConnection conn = OpenConnection();
@@ -73,10 +73,10 @@ namespace Authentication.Application
             // Connect to database
             MySqlConnection conn = OpenConnection();
             conn = OpenConnection();
-            // Run query to get idUser
+            // Run query to get id
             StringBuilder sqlStringUsers = new StringBuilder();
             sqlStringUsers.Append("SELECT ");
-            sqlStringUsers.Append("users.idUsers, users.email ");
+            sqlStringUsers.Append("users.id, users.email ");
             sqlStringUsers.Append("FROM Authentication.users ");
             sqlStringUsers.Append($"WHERE users.email = '{email}';");
             MySqlCommand cmd = new MySqlCommand(sqlStringUsers.ToString(), conn);
@@ -85,7 +85,7 @@ namespace Authentication.Application
                 return result;
             }
             queryResult.Read();
-            int userId = (int)queryResult["idUsers"];
+            int userId = (int)queryResult["id"];
             queryResult.Close ();
             // Run query to get check if customer has any entries in Authentication.tfa
             StringBuilder sqlTfaQuery = new StringBuilder();
@@ -142,9 +142,9 @@ namespace Authentication.Application
             conn = OpenConnection();
             // Run query to get tfa.enabled
             StringBuilder userQuery = new StringBuilder();
-            userQuery.Append("SELECT users.idUsers, users.email, tfa.idTfa, tfa.enabled ");
+            userQuery.Append("SELECT users.id, users.email, tfa.idTfa, tfa.enabled ");
             userQuery.Append("FROM Authentication.users ");
-            userQuery.Append("INNER JOIN Authentication.tfa ON users.idUsers=tfa.idUsers ");
+            userQuery.Append("INNER JOIN Authentication.tfa ON users.id=tfa.idUsers ");
             userQuery.Append($"WHERE users.email = '{email}' ");
             userQuery.Append($"AND tfa.enabled = 1;");
 
@@ -168,9 +168,9 @@ namespace Authentication.Application
             conn = OpenConnection();
             // Run query to get tfa.enabled
             StringBuilder userQuery = new StringBuilder();
-            userQuery.Append("SELECT users.idUsers, users.email, tfa.idTfa, tfa.enabled ");
+            userQuery.Append("SELECT users.id, users.email, tfa.idTfa, tfa.enabled ");
             userQuery.Append("FROM Authentication.users ");
-            userQuery.Append("INNER JOIN Authentication.tfa ON users.idUsers=tfa.idUsers ");
+            userQuery.Append("INNER JOIN Authentication.tfa ON users.id=tfa.idUsers ");
             userQuery.Append($"WHERE users.email = '{email}' ;");
 
             MySqlCommand cmd = new MySqlCommand(userQuery.ToString(), conn);
@@ -220,7 +220,7 @@ namespace Authentication.Application
                 StringBuilder userQuery = new StringBuilder();
                 userQuery.Append("UPDATE Authentication.tfa ");
                 userQuery.Append("LEFT JOIN Authentication.users ");
-                userQuery.Append("ON tfa.idUsers=users.idUsers ");
+                userQuery.Append("ON tfa.idUsers=users.id ");
                 userQuery.Append($"SET tfa.enabled = {enable} ");
                 userQuery.Append($"WHERE users.email = '{email}';");
                 // Execute query

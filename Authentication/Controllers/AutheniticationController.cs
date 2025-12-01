@@ -70,7 +70,10 @@ namespace Authentication.Controllers
         public IActionResult TfaRegister()
         {
             var idendity = User.Identity as ClaimsIdentity;
-            TfaRegisterResponse tfaRegisterResponse = Tfa.CreateNewTotp(idendity.FindFirst(ClaimTypes.Email).Value);
+            var email = idendity?.FindFirst(ClaimTypes.Email)?.Value;
+            var issuer = idendity?.FindFirst("iss")?.Value;
+#pragma warning disable CS8604 // Possible null reference argument.
+            TfaRegisterResponse tfaRegisterResponse = Tfa.CreateNewTotp(email, issuer);
             tfaRegisterResponse.Authenticated = Convert.ToBoolean(idendity.FindFirst(ClaimTypes.Authentication).Value);   
             if (!tfaRegisterResponse.Success) {
                 _logger.LogInformation($"TFA Register unsuccessful: {tfaRegisterResponse.error}");
