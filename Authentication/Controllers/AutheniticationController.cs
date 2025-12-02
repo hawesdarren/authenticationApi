@@ -66,19 +66,19 @@ namespace Authentication.Controllers
         [Authorize(Policy = "Email")]
         //[Authorize(Policy = "Authentication")] // Allow unathenticated users to register TFA
         [HttpPost]
-        [Route("tfa/register")]
-        public IActionResult TfaRegister()
+        [Route("tfa/setup")]
+        public IActionResult TfaSetup()
         {
             var idendity = User.Identity as ClaimsIdentity;
             var email = idendity?.FindFirst(ClaimTypes.Email)?.Value;
             var issuer = idendity?.FindFirst("iss")?.Value;
 #pragma warning disable CS8604 // Possible null reference argument.
-            TfaRegisterResponse tfaRegisterResponse = Tfa.CreateNewTotp(email, issuer);
-            tfaRegisterResponse.Authenticated = Convert.ToBoolean(idendity.FindFirst(ClaimTypes.Authentication).Value);   
-            if (!tfaRegisterResponse.Success) {
-                _logger.LogInformation($"TFA Register unsuccessful: {tfaRegisterResponse.error}");
+            TfaSetupResponse tfaSetupResponse = Tfa.CreateNewTotp(email, issuer);
+            tfaSetupResponse.Authenticated = Convert.ToBoolean(idendity.FindFirst(ClaimTypes.Authentication).Value);
+            if (!tfaSetupResponse.Success) {
+                _logger.LogInformation($"TFA Setup unsuccessful: {tfaSetupResponse.error}");
             }
-            return Ok(tfaRegisterResponse);
+            return Ok(tfaSetupResponse);
 
         }
 
