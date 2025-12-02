@@ -9,7 +9,7 @@ namespace Authentication.Application
 {
     public class Tfa : DatabaseConnector
     {
-        public static TfaRegisterResponse CreateNewTotp(string email, string issuer) {
+        public static TfaSetupResponse CreateNewTotp(string email, string issuer) {
 
             var key = KeyGeneration.GenerateRandomKey(20);
             var base32String = Base32Encoding.ToString(key);
@@ -17,10 +17,10 @@ namespace Authentication.Application
             bool result = RegisterTotpInDatabase(email, base32String);
             var uriTotp = new OtpUri(OtpType.Totp, base32String, email, issuer).ToString();
             // Response 
-            TfaRegisterResponse tfaRegisterResponse = new() { Success = result, Authenticated = false };
-            tfaRegisterResponse.keyUri = uriTotp;
-            tfaRegisterResponse.Success = result;
-            return tfaRegisterResponse;
+            TfaSetupResponse tfaSetupResponse = new() { Success = result, Authenticated = false };
+            tfaSetupResponse.keyUri = uriTotp;
+            tfaSetupResponse.Success = result;
+            return tfaSetupResponse;
         }
 
         public static TfaValidateResponse Validate(string email, string input) {
