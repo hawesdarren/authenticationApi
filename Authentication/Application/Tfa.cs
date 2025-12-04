@@ -51,8 +51,9 @@ namespace Authentication.Application
             // Query
             StringBuilder query = new StringBuilder();
             query.Append("SELECT tfa.key  ");
-            query.Append("FROM Authentication.tfa ");
-            query.Append("INNER JOIN Authentication.users ON tfa.idUsers=users.id");
+            query.Append("FROM Authentication.tfa AS tfa ");
+            query.Append("INNER JOIN Authentication.users AS users ");
+            query.Append("ON tfa.idUsers=users.id ");
             query.Append($"WHERE users.email = '{email}';");
             // Database connection
             MySqlConnection conn = OpenConnection();
@@ -143,8 +144,9 @@ namespace Authentication.Application
             // Run query to get tfa.enabled
             StringBuilder userQuery = new StringBuilder();
             userQuery.Append("SELECT users.id, users.email, tfa.idTfa, tfa.enabled ");
-            userQuery.Append("FROM Authentication.users ");
-            userQuery.Append("INNER JOIN Authentication.tfa ON users.id=tfa.idUsers ");
+            userQuery.Append("FROM Authentication.users AS users ");
+            userQuery.Append("INNER JOIN Authentication.tfa AS tfa ");
+            userQuery.Append("ON users.id=tfa.idUsers ");
             userQuery.Append($"WHERE users.email = '{email}' ");
             userQuery.Append($"AND tfa.enabled = 1;");
 
@@ -169,8 +171,9 @@ namespace Authentication.Application
             // Run query to get tfa.enabled
             StringBuilder userQuery = new StringBuilder();
             userQuery.Append("SELECT users.id, users.email, tfa.idTfa, tfa.enabled ");
-            userQuery.Append("FROM Authentication.users ");
-            userQuery.Append("INNER JOIN Authentication.tfa ON users.id=tfa.idUsers ");
+            userQuery.Append("FROM Authentication.users AS users ");
+            userQuery.Append("INNER JOIN Authentication.tfa AS tfa ");
+            userQuery.Append("ON users.id=tfa.idUsers ");
             userQuery.Append($"WHERE users.email = '{email}' ;");
 
             MySqlCommand cmd = new MySqlCommand(userQuery.ToString(), conn);
@@ -218,8 +221,8 @@ namespace Authentication.Application
                 conn = OpenConnection();
                 // Run query to get tfa.enabled
                 StringBuilder userQuery = new StringBuilder();
-                userQuery.Append("UPDATE Authentication.tfa ");
-                userQuery.Append("LEFT JOIN Authentication.users ");
+                userQuery.Append("UPDATE Authentication.tfa AS tfa ");
+                userQuery.Append("LEFT JOIN Authentication.users AS users ");
                 userQuery.Append("ON tfa.idUsers=users.id ");
                 userQuery.Append($"SET tfa.enabled = {enable} ");
                 userQuery.Append($"WHERE users.email = '{email}';");
