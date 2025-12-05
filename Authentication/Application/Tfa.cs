@@ -36,7 +36,7 @@ namespace Authentication.Application
                 tfaValidateResponse.Success = true;
                 tfaValidateResponse.Authenticated = true;
                 tfaValidateResponse.token = Token.GenerateJwtToken(email, true, 10);
-                
+                tfaValidateResponse.refreshToken = Token.RefreshToken(60);
             }
             else
             {
