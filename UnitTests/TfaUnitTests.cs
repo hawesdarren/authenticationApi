@@ -37,7 +37,7 @@ namespace UnitTests
             StringBuilder query = new StringBuilder();
             query.Append("SELECT users.email ");
             query.Append("FROM Authentication.users ");
-            query.Append("INNER JOIN Authentication.tfa ON users.idUsers=tfa.idUsers ");
+            query.Append("INNER JOIN Authentication.tfa ON users.id=tfa.idUsers ");
             query.Append("WHERE tfa.enabled = 1;");
             // Connect to database
             MySqlConnection conn = OpenConnection();
@@ -60,7 +60,7 @@ namespace UnitTests
             StringBuilder query = new StringBuilder();
             query.Append("SELECT users.email ");
             query.Append("FROM Authentication.users ");
-            query.Append("LEFT JOIN Authentication.tfa ON users.idUsers=tfa.idUsers ");
+            query.Append("LEFT JOIN Authentication.tfa ON users.id=tfa.idUsers ");
             query.Append("WHERE tfa.enabled IS NULL;");
             // Connect to database
             MySqlConnection conn = OpenConnection();
@@ -83,7 +83,7 @@ namespace UnitTests
             query.Append("SELECT ");
             query.Append("users.email, tfa.key ");
             query.Append("FROM Authentication.users ");
-            query.Append("LEFT JOIN Authentication.tfa ON users.idUsers=tfa.idUsers ");
+            query.Append("LEFT JOIN Authentication.tfa ON users.id=tfa.idUsers ");
             query.Append("WHERE tfa.enabled = 1;");
             // Connect to database
             MySqlConnection conn = OpenConnection();
@@ -115,7 +115,7 @@ namespace UnitTests
             query.Append("SELECT ");
             query.Append("users.email, tfa.key ");
             query.Append("FROM Authentication.users ");
-            query.Append("LEFT JOIN Authentication.tfa ON users.idUsers=tfa.idUsers ");
+            query.Append("LEFT JOIN Authentication.tfa ON users.id=tfa.idUsers ");
             query.Append("WHERE tfa.enabled = 1;");
             // Connect to database
             MySqlConnection conn = OpenConnection();
