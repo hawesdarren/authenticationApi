@@ -1,4 +1,5 @@
 ﻿using MySql.Data.MySqlClient;
+using System.Data;
 
 namespace Authentication.Application
 {
@@ -24,6 +25,11 @@ namespace Authentication.Application
                 conn = new MySqlConnection();
                 conn.ConnectionString = config["authentication:databaseConnectionString"];
                 conn.Open();
+                if (conn == null || conn.State != ConnectionState.Open)
+                {
+                    // Handle error: connection is not open
+                    throw new InvalidOperationException("Database connection is not open.");
+                }
 
             }
             catch (MySqlException ex)

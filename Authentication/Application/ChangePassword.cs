@@ -48,7 +48,6 @@ namespace Authentication.Application
 
             // Connect to database
             MySqlConnection conn = OpenConnection();
-            conn = OpenConnection();
             // Run query
             var sqlString = $"UPDATE Authentication.users " + 
                             $"SET salt = '{saltString}', " + 
