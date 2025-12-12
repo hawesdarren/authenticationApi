@@ -18,7 +18,7 @@ namespace IntegrationTests
             Authentication.Json.Requests.LoginRequest loginRequest = new()
             {
                 email = "someone4@somewhere.co.nz",
-                password = "Testing123",
+                password = "Testing123$",
 
             };
 
@@ -32,8 +32,8 @@ namespace IntegrationTests
             // Change password
             Authentication.Json.Requests.ChangePasswordRequest request = new()
             {
-                password = "Testing123",
-                confirmPassword = "Testing123",
+                password = "Testing123$",
+                confirmPassword = "Testing123$",
             };
 
             var response = await Settings.GetSUT()
@@ -54,8 +54,8 @@ namespace IntegrationTests
             // Change password
             Authentication.Json.Requests.ChangePasswordRequest request = new()
             {
-                password = "Testing123",
-                confirmPassword = "Testing123",
+                password = "Testing123$",
+                confirmPassword = "Testing123$",
             };
 
             var response = await Settings.GetSUT()
