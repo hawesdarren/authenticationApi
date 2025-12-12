@@ -57,13 +57,13 @@ namespace Authentication.Application
             query.Append($"WHERE users.email = '{email}';");
             // Database connection
             MySqlConnection conn = OpenConnection();
-            conn = OpenConnection();
             // Run query
             MySqlCommand cmd = new MySqlCommand(query.ToString(), conn);
             MySqlDataReader queryResult = cmd.ExecuteReader();
             queryResult.Read();
             string key = (string)queryResult["key"];
             queryResult.Close();
+            conn.Close();
             return key;
         }
 
@@ -73,7 +73,6 @@ namespace Authentication.Application
             bool result = false;
             // Connect to database
             MySqlConnection conn = OpenConnection();
-            conn = OpenConnection();
             // Run query to get id
             StringBuilder sqlStringUsers = new StringBuilder();
             sqlStringUsers.Append("SELECT ");
@@ -131,7 +130,7 @@ namespace Authentication.Application
                 // todo user should not have multiple tfa records
                 result  = false;
             }
-
+            conn.Close();
             return result;
 
         }
@@ -140,7 +139,6 @@ namespace Authentication.Application
             bool tfaEnabled = false;
             // Connect to database
             MySqlConnection conn = OpenConnection();
-            conn = OpenConnection();
             // Run query to get tfa.enabled
             StringBuilder userQuery = new StringBuilder();
             userQuery.Append("SELECT users.id, users.email, tfa.idTfa, tfa.enabled ");
@@ -159,7 +157,7 @@ namespace Authentication.Application
                 }
                 
             }
-
+            conn.Close();
             return tfaEnabled;
         }
 
@@ -167,7 +165,6 @@ namespace Authentication.Application
             bool result = false;
             // Connect to database
             MySqlConnection conn = OpenConnection();
-            conn = OpenConnection();
             // Run query to get tfa.enabled
             StringBuilder userQuery = new StringBuilder();
             userQuery.Append("SELECT users.id, users.email, tfa.idTfa, tfa.enabled ");
@@ -186,7 +183,7 @@ namespace Authentication.Application
                 }
 
             }
-
+            conn.Close();
             return result;
         }
 
@@ -218,7 +215,6 @@ namespace Authentication.Application
             {
                 // Connect to database
                 MySqlConnection conn = OpenConnection();
-                conn = OpenConnection();
                 // Run query to get tfa.enabled
                 StringBuilder userQuery = new StringBuilder();
                 userQuery.Append("UPDATE Authentication.tfa AS tfa ");
@@ -237,6 +233,7 @@ namespace Authentication.Application
                 else {
                     enableTfaResponse.SetError(Json.Enums.ErrorEnums.Error.TFA_ERROR);
                 }
+                conn.Close();
             }
             else {
                 enableTfaResponse.SetError(Json.Enums.ErrorEnums.Error.EMAIL_NOT_REGISTERED_FOR_TFA);

@@ -27,7 +27,6 @@ namespace Authentication.Application.Validations
             // todo
             // Connect to database
             MySqlConnection conn = OpenConnection();
-            conn = OpenConnection();
             // Run query
             var sqlString = $"SELECT salt, hashedPassword FROM Authentication.users WHERE email = '{email}';";
             MySqlCommand cmd = new MySqlCommand(sqlString, conn);
@@ -62,7 +61,6 @@ namespace Authentication.Application.Validations
             bool result = true;
             // Connect to database
             MySqlConnection conn = OpenConnection();
-            conn = OpenConnection();
             // Run query
             var sqlString = $"SELECT COUNT(UPPER(password)) FROM Authentication.blockedPasswords WHERE password = '{password.ToUpper()}'";
             MySqlCommand cmd = new MySqlCommand(sqlString, conn);
@@ -84,7 +82,6 @@ namespace Authentication.Application.Validations
             bool result = false;
             // Connect to database
             MySqlConnection conn = OpenConnection();
-            conn = OpenConnection();
             // Run query
             var sqlString = $"SELECT expiryDate FROM Authentication.users WHERE email = '{email}'";
             MySqlCommand cmd = new MySqlCommand(sqlString, conn);
@@ -112,7 +109,6 @@ namespace Authentication.Application.Validations
             bool result = false;
             // Connect to database
             MySqlConnection conn = OpenConnection();
-            conn = OpenConnection();
             // Run query
             var sqlString = $"SELECT expiryDate FROM Authentication.users WHERE email = '{email}'";
             MySqlCommand cmd = new MySqlCommand(sqlString, conn);
@@ -135,7 +131,6 @@ namespace Authentication.Application.Validations
             bool result = false;
             // Connect to database
             MySqlConnection conn = OpenConnection();
-            conn = OpenConnection();
             // Run query
             var sqlString = $"SELECT tempBlockExpiry FROM Authentication.users WHERE email = '{email}'";
             MySqlCommand cmd = new MySqlCommand(sqlString, conn);
@@ -177,7 +172,6 @@ namespace Authentication.Application.Validations
             // Run query to update number of login attempts
             // Connect to database
             MySqlConnection conn = OpenConnection();
-            conn = OpenConnection();
             string sqlUpdateAttemptsString = $"UPDATE Authentication.users SET loginAttempts = {attempts} WHERE email = '{email}'";
             MySqlCommand cmd = new MySqlCommand(sqlUpdateAttemptsString, conn);
             var attemptsQueryResult = cmd.ExecuteNonQuery();
@@ -206,7 +200,6 @@ namespace Authentication.Application.Validations
 
             // Connect to database
             MySqlConnection conn = OpenConnection();
-            conn = OpenConnection();
             // Run query to get current number of login attempts
             var sqlSelectString = $"SELECT loginAttempts FROM Authentication.users WHERE email = '{email}'";
             MySqlCommand cmd = new MySqlCommand(sqlSelectString, conn);

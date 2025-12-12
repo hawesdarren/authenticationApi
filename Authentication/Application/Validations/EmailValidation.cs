@@ -1,5 +1,6 @@
 ﻿using Authentication.Json.Responses;
 using MySql.Data.MySqlClient;
+using System.Data; // Needed for ConnectionState
 using System.Net.Mail;
 
 namespace Authentication.Application.Validations
@@ -32,7 +33,7 @@ namespace Authentication.Application.Validations
             bool result = true;
             // Connect to database
             MySqlConnection conn = OpenConnection();
-            conn = OpenConnection();
+            
             // Run query
             var sqlString = $"SELECT COUNT(UPPER(email)) FROM Authentication.users WHERE email = '{email.ToUpper()}';";
             MySqlCommand cmd = new MySqlCommand(sqlString, conn);
