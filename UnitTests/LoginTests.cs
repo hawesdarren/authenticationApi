@@ -13,10 +13,10 @@ namespace UnitTests
     
     public class LoginTests
     {
-        [TestCase("someone@somewhere.co.nz", "Testing123", true, true)]
-        [TestCase("someone@somewhere.co.nz", "Testing1234", false, false)]
-        [TestCase("noone@somewhere.co.nz", "Testing123", false, false)]
-        [TestCase("@somewhere.co.nz", "Testing123", false, false)]
+        [TestCase("someone@somewhere.co.nz", "Testing123$", true, true)]
+        [TestCase("someone@somewhere.co.nz", "Testing1234$", false, false)]
+        [TestCase("noone@somewhere.co.nz", "Testing123$", false, false)]
+        [TestCase("@somewhere.co.nz", "Testing123$", false, false)]
         public void LoginUserTest(string email, string password, bool success, bool authenticated)
         {
             
@@ -55,7 +55,7 @@ namespace UnitTests
                 response = LoginUser.ValidatePassword(request);
             }
             // Login with locked password
-            request.password = "Testing123";
+            request.password = "Testing123$";
             response = LoginUser.ValidatePassword(request);
 
             response.ShouldSatisfyAllConditions(
@@ -67,8 +67,8 @@ namespace UnitTests
 
         }
 
-        [TestCase("someone4@somewhere.co.nz", "Testing123", true)]
-        [TestCase("someone5@somewhere.co.nz", "Testing123", false)]
+        [TestCase("someone4@somewhere.co.nz", "Testing123$", true)]
+        [TestCase("someone5@somewhere.co.nz", "Testing123$", false)]
         public void LoginTfaEnabled(string email, string password, bool tfaEnabled) {
             Authentication.Json.Requests.LoginRequest request = new()
             {

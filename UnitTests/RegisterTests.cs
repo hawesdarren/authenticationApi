@@ -15,7 +15,7 @@ namespace UnitTests
         {
         }
 
-        [TestCase("Testing123", "Testing123", true)]
+        [TestCase("Testing123$", "Testing123$", true)]
         [TestCase("Password123", "Password123", false)]
         [TestCase("Testing123", "Testing1234", false)]
         [TestCase("testing123", "testing123", false)]
@@ -43,8 +43,8 @@ namespace UnitTests
             Authentication.Json.Requests.RegisterRequest request = new()
             {
                 email = email,
-                password = "Testing123",
-                renteredPassword = "Testing123"
+                password = "Testing123$",
+                renteredPassword = "Testing123$"
             };
 
             RegisterResponse response1 = RegisterUser.Register(request);
@@ -62,8 +62,8 @@ namespace UnitTests
             Authentication.Json.Requests.RegisterRequest request = new()
             {
                 email = "someone@",
-                password = "Testing123",
-                renteredPassword = "Testing123"
+                password = "Testing123$",
+                renteredPassword = "Testing123$"
             };
                         
             RegisterResponse response = RegisterUser.Register(request);
