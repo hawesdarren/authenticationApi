@@ -10,7 +10,7 @@ namespace Authentication.Application
     {
         const int degreeOfParallelism = 1;
         const int iterations = 4;
-        const int memorySize = 16384;
+        const int memorySize = 32 * 1024;
         
         public static byte[] CreateSalt() {
             var buffer = new byte[32];

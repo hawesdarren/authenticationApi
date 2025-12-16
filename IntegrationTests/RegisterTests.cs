@@ -21,8 +21,8 @@ namespace IntegrationTests
             string email = RandonString() + "@somewhere.co.nz";
             Authentication.Json.Requests.RegisterRequest request = new()  { 
                 email = email,
-                password = "Testing123",
-                renteredPassword = "Testing123"
+                password = "Testing123$",
+                renteredPassword = "Testing123$"
             };
 
             var response = await Settings.GetSUT()

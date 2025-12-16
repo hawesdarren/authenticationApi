@@ -22,7 +22,7 @@ namespace IntegrationTests
             Authentication.Json.Requests.LoginRequest request = new()
             {
                 email = "someone@somewhere.co.nz",
-                password = "Testing123",
+                password = "Testing123$",
                 
             };
 
