@@ -85,7 +85,7 @@ namespace Authentication.Application
             // Connect to database
             MySqlConnection conn = OpenConnection();
             // Run query
-            var sqlString = $"INSERT INTO users (email, salt, hashedPassword, loginAttempts, tempBlockExpiry, expiryDate)" +
+            var sqlString = $"INSERT INTO users (email, salt, hashedPassword, loginAttempts, tempBlockExpiry, expiryDate) " +
                             $"VALUES ('{email}', '{salt}', '{hashedPassword}', 0, null, null);";
             MySqlCommand cmd = new MySqlCommand(sqlString, conn);
             var queryResult = (long)cmd.ExecuteNonQuery();
