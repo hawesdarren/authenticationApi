@@ -127,6 +127,20 @@ namespace Authentication.Controllers
 
         }
 
+        [HttpPost]
+        [Route("forgotten/password")]
+        public async Task<IActionResult> ForgottenPasswordResponse([FromBody] Json.Requests.ForgottenPasswordRequest forgottenPasswordRequest)
+        {
+            ForgottenPasswordResponse forgottenPasswordResponse = new ForgottenPasswordResponse { Authenticated = false, Success = false };
+            forgottenPasswordResponse = await ForgottenPassword.ProcessForgottenPasswordAsync(forgottenPasswordRequest);
+            if (!forgottenPasswordResponse.Success)
+            {
+                _logger.LogInformation($"Forgotten password unsuccessful: {forgottenPasswordResponse.error}");
+            }
+            return Ok(forgottenPasswordResponse);
+
+        }
+
         [HttpGet]
         [Route("health")]
         public IActionResult Health()
