@@ -39,7 +39,8 @@ namespace Authentication.Application
             // Connect to database
             MySqlConnection conn = DatabaseConnector.OpenConnection();
             // Create the query
-            var sqlString = $"SELECT COUNT(*) FROM Authentication.users WHERE email = '{email}';";
+            var sqlString = $"SELECT COUNT(*) FROM Authentication.users AS users " +
+                            $"WHERE users.email = '{email}';";
             MySqlCommand cmd = new MySqlCommand(sqlString, conn);
             // Run the query
             var count = (long)cmd.ExecuteScalar();
@@ -66,11 +67,13 @@ namespace Authentication.Application
             byte[] passwordBytes = Argon.CreateHashPassword(tempPassword, salt);
             string hashedTempPassword = Convert.ToHexString(passwordBytes);
             // Set expiry date to 24 hours from now
-            DateTime expiryDate = DateTime.UtcNow.AddHours(241);
+            DateTime expiryDate = DateTime.UtcNow.AddHours(24);
             // Create the query
-            var sqlString = $"UPDATE Authentication.users " +
-                            $"SET tempPassword = '{hashedTempPassword}', tempPasswordExpiry = '{expiryDate.ToString("yyyy-MM-dd HH:mm:ss")}' " +
-                            $"WHERE email = '{email}'; ";
+            var sqlString = $"UPDATE Authentication.users AS users " +
+                            $"SET users.hashedPassword = '{hashedTempPassword}', " +
+                            $"users.salt = '{saltString}', " + 
+                            $"users.expiryDate = '{expiryDate.ToString("yyyy-MM-dd HH:mm:ss")}' " +
+                            $"WHERE users.email = '{email}'; ";
             MySqlCommand cmd = new MySqlCommand(sqlString, conn);
             // Run the query
             int rowsAffected = cmd.ExecuteNonQuery();
@@ -93,7 +96,7 @@ namespace Authentication.Application
                        "<p>Please use this password to log in and remember to change it after logging in.</p>" +
                        "<p>This temporary password will expire in 24 hours.</p>";
             // Send the email using ZeptoMail
-            result = await ZeptoMail.SendEmailAsync(email, subject, body);
+            result = await SMTP2GO.SendEmailAsync(email, subject, body);
             return result;
 
         }
