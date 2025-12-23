@@ -118,7 +118,7 @@ namespace Authentication.Application
                 StringBuilder insertTfaSql = new StringBuilder();
                 insertTfaSql.Append("INSERT INTO Authentication.tfa ");
                 insertTfaSql.Append("(tfa.idUsers, tfa.key, tfa.enabled) ");
-                insertTfaSql.Append($"VALUES ({userId}, '{key}', 1);");
+                insertTfaSql.Append($"VALUES ({userId}, '{key}', 0);");
                 cmd = new MySqlCommand(insertTfaSql.ToString(), conn);
                 var insertResult = (long)cmd.ExecuteNonQuery();
                 if (insertResult == 1)
