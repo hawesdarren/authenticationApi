@@ -229,6 +229,9 @@ namespace Authentication.Application
                 {
                     result = true;
                     enableTfaResponse.Success = result;
+                    // Add tokens
+                    enableTfaResponse.token = Token.GenerateJwtToken(email, true, 10);
+                    enableTfaResponse.refreshToken = Token.GenerateJwtToken(email, true, 600);
                 }
                 else {
                     enableTfaResponse.SetError(Json.Enums.ErrorEnums.Error.TFA_ERROR);
