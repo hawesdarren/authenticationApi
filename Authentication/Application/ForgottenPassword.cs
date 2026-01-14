@@ -1,4 +1,5 @@
-﻿using MySql.Data.MySqlClient;
+﻿using Microsoft.Extensions.Options;
+using MySql.Data.MySqlClient;
 using Authentication.Json.Requests;
 using Authentication.Json.Responses;
 
@@ -6,6 +7,13 @@ namespace Authentication.Application
 {
     public class ForgottenPassword
     {
+        private readonly SmtpOptions _smtpOptions;
+
+        public ForgottenPassword(IOptions<SmtpOptions> smtpOptions)
+        {
+            _smtpOptions = smtpOptions.Value;
+        }
+
         private static string GenerateTempPassword()
         {
             // List of colors with first letter capitalized
@@ -33,7 +41,7 @@ namespace Authentication.Application
             return $"{color}{specialChar}{number}";
         }
 
-        private static bool CheckEmailExists(string email)
+        private bool CheckEmailExists(string email)
         {
             bool result = false;
             // Connect to database
@@ -55,7 +63,7 @@ namespace Authentication.Application
         }
 
 
-        private static bool StoreTempPasswordInDatabase(string email, string tempPassword)
+        private bool StoreTempPasswordInDatabase(string email, string tempPassword)
         {
             bool result = false;
             // Connect to database
@@ -87,7 +95,7 @@ namespace Authentication.Application
             return result;
         }
 
-        private static async Task<bool> SendTempPasswordEmailAsync(string email, string tempPassword)
+        private async Task<bool> SendTempPasswordEmailAsync(string email, string tempPassword)
         {
             // Todo: Implement email sending functionality
             bool result = false;
@@ -96,12 +104,12 @@ namespace Authentication.Application
                        "<p>Please use this password to log in and remember to change it after logging in.</p>" +
                        "<p>This temporary password will expire in 24 hours.</p>";
             // Send the email using ZeptoMail
-            result = await SMTP2GO.SendEmailAsync(email, subject, body);
+            var smtp2go = new SMTP2GO(Options.Create(_smtpOptions));
+            result = await smtp2go.SendEmailAsync(email, subject, body);
             return result;
-
         }
 
-        public static async Task<ForgottenPasswordResponse> ProcessForgottenPasswordAsync(ForgottenPasswordRequest forgottenPasswordRequest)
+        public async Task<ForgottenPasswordResponse> ProcessForgottenPasswordAsync(ForgottenPasswordRequest forgottenPasswordRequest)
         {
             ForgottenPasswordResponse forgottenPasswordResponse = new ForgottenPasswordResponse
             {

@@ -2,6 +2,7 @@
 using Authentication.Json.Requests;
 using Authentication.Json.Responses;
 using Microsoft.AspNetCore.Identity.Data;
+using Microsoft.Extensions.Options;
 using MySql.Data.MySqlClient;
 using RegisterRequest = Authentication.Json.Requests.RegisterRequest;
 
@@ -9,7 +10,14 @@ namespace Authentication.Application
 {
     public class RegisterUser : DatabaseConnector
     {
-        public static RegisterResponse Register(RegisterRequest registerRequest)
+        private readonly AuthenticationOptions _authenticationOptions;
+
+        public RegisterUser(IOptions<AuthenticationOptions> authenticationOptions)
+        {
+            _authenticationOptions = authenticationOptions.Value;
+        }
+
+        public RegisterResponse Register(RegisterRequest registerRequest)
         {
             RegisterResponse registerResponse = new ();
             // Email format check
@@ -56,7 +64,7 @@ namespace Authentication.Application
             return registerResponse;
         }
 
-        private static RegisterResponse CreateSaltAndHashAndRegisterUser(RegisterRequest registerRequest) {
+        private RegisterResponse CreateSaltAndHashAndRegisterUser(RegisterRequest registerRequest) {
             RegisterResponse registerResponse = new ();
             // Create Salt and Hash for Password
             byte[] salt = Argon.CreateSalt();
@@ -69,7 +77,9 @@ namespace Authentication.Application
             {
                 registerResponse.Success = true;
                 registerResponse.Authenticated = false;
-                registerResponse.token = Token.GenerateJwtToken(registerRequest.email, false, 10);
+                // Generate JWT Token
+                Token tokenGenerator = new Token(Microsoft.Extensions.Options.Options.Create(_authenticationOptions));
+                registerResponse.token = tokenGenerator.GenerateJwtToken(registerRequest.email, false, 10);
                 return registerResponse;
             }
             else
@@ -80,7 +90,7 @@ namespace Authentication.Application
             }
         }
 
-        private static bool RegisterUserInDatabase(string email, string salt, string hashedPassword) {
+        private bool RegisterUserInDatabase(string email, string salt, string hashedPassword) {
             bool result = false;
             // Connect to database
             MySqlConnection conn = OpenConnection();

@@ -3,6 +3,7 @@ using Authentication.Json.Requests;
 using Authentication.Json.Responses;
 using Authentication.Models;
 using Microsoft.AspNetCore.Identity.Data;
+using Microsoft.Extensions.Options;
 using MySql.Data.MySqlClient;
 using Mysqlx.Crud;
 
@@ -11,7 +12,14 @@ namespace Authentication.Application
     public class ChangePassword : DatabaseConnector
     {
 
-        public static ChangePasswordResponse Change(ChangePasswordRequest request, string email) { 
+        readonly AuthenticationOptions _authenticationOptions;
+
+        public ChangePassword(IOptions<AuthenticationOptions> authenticationOptions)
+        {
+            _authenticationOptions = authenticationOptions.Value;
+        }
+
+        public ChangePasswordResponse Change(ChangePasswordRequest request, string email) {
             ChangePasswordResponse response = new ChangePasswordResponse();
             // Password and Confirm Password match
             if (!request.password.Equals(request.confirmPassword)) {
@@ -37,7 +45,7 @@ namespace Authentication.Application
 
         }
 
-        private static bool UpdatePassword(ChangePasswordRequest request, string email ) {
+        private bool UpdatePassword(ChangePasswordRequest request, string email ) {
             
             bool result = false;
             // Create Salt and Hash for Password

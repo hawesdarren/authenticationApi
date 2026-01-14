@@ -1,5 +1,7 @@
 ﻿using Authentication.Application;
 using Authentication.Json.Responses;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using MySql.Data.MySqlClient;
 using Org.BouncyCastle.Utilities;
 using OtpNet;
@@ -14,7 +16,19 @@ namespace UnitTests
 {
     public class TfaUnitTests : DatabaseConnector
     {
-        private static string GenerateTfaCode(string secret) { 
+        private IOptions<AuthenticationOptions> BuildOptions()
+        {
+            var config = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
+                .AddJsonFile("app/secret-volume/secrets.json", optional: true, reloadOnChange: false)
+                .AddUserSecrets(typeof(AuthenticationOptions).Assembly)
+                .Build();
+            var auth = new AuthenticationOptions();
+            config.GetSection("Authentication").Bind(auth);
+            return Options.Create(auth);
+        }
+
+        private string GenerateTfaCode(string secret) { 
             Totp totp = new Totp(secretKey: Base32Encoding.ToBytes(secret));
             return totp.ComputeTotp();
         }
@@ -22,8 +36,10 @@ namespace UnitTests
         [TestCase("tfa.testing@hawes.co.nz")]
         public void GenerateTotp(string email)
         {
+            var options = BuildOptions();
             // Email must be registerd to create a totp 
-            TfaSetupResponse response = Tfa.CreateNewTotp(email, "test-issuer");
+            Tfa tfa = new Tfa(options);
+            TfaSetupResponse response = tfa.CreateNewTotp(email, "test-issuer");
             response.ShouldSatisfyAllConditions(
                 () => response.ShouldNotBeNull(),
                 () => response.Success.ShouldBeTrue()
@@ -32,7 +48,8 @@ namespace UnitTests
         }
 
         [Test]
-        public void IsTfaEnabled() { 
+        public void IsTfaEnabled() {
+            var options = BuildOptions();
             //Get data from database
             StringBuilder query = new StringBuilder();
             query.Append("SELECT users.email ");
@@ -49,13 +66,15 @@ namespace UnitTests
             string email = (string)queryResult["email"];
 
             // Check enabled
-            bool result = Tfa.IsTfaEnabled(email);
+            Tfa tfa = new Tfa(options);
+            bool result = tfa.IsTfaEnabled(email);
             result.ShouldBeTrue();
         }
 
         [Test]
         public void IsTfaNotEnabled()
         {
+            var options = BuildOptions();
             //Get data from database
             StringBuilder query = new StringBuilder();
             query.Append("SELECT users.email ");
@@ -72,12 +91,14 @@ namespace UnitTests
             string email = (string)queryResult["email"];
 
             // Check enabled
-            bool result = Tfa.IsTfaEnabled(email);
+            Tfa tfa = new Tfa(options);
+            bool result = tfa.IsTfaEnabled(email);
             result.ShouldBeFalse();
         }
 
         [Test]
         public void VerfiyTotp() {
+            var options = BuildOptions();
             // Get and user from the database that is registered and tfa enabled
             StringBuilder query = new StringBuilder();
             query.Append("SELECT ");
@@ -100,7 +121,8 @@ namespace UnitTests
             string totpCode = totp.ComputeTotp();
 
             // Verify totp
-            TfaValidateResponse tfaValidateResponse = Tfa.Validate(email, totpCode);
+            Tfa tfa = new Tfa(options);
+            TfaValidateResponse tfaValidateResponse = tfa.Validate(email, totpCode);
             tfaValidateResponse.ShouldSatisfyAllConditions(
                 () => tfaValidateResponse.Success.ShouldBeTrue(),
                 () => tfaValidateResponse.Authenticated.ShouldBeTrue()
@@ -110,6 +132,7 @@ namespace UnitTests
         [Test]
         public void VerfiyTotpInvlaidTotp()
         {
+            var options = BuildOptions();
             // Get and user from the database that is registered and tfa enabled
             StringBuilder query = new StringBuilder();
             query.Append("SELECT ");
@@ -130,7 +153,8 @@ namespace UnitTests
             string totpCode = "123456";
 
             // Verify totp
-            TfaValidateResponse tfaValidateResponse = Tfa.Validate(email, totpCode);
+            Tfa tfa = new Tfa(options);
+            TfaValidateResponse tfaValidateResponse = tfa.Validate(email, totpCode);
             tfaValidateResponse.ShouldSatisfyAllConditions(
                 () => tfaValidateResponse.Success.ShouldBeFalse(),
                 () => tfaValidateResponse.Authenticated.ShouldBeFalse()

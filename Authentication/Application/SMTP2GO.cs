@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Headers;
+﻿using Microsoft.Extensions.Options;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 
@@ -10,20 +11,17 @@ namespace Authentication.Application
 
         private const string ApiUrl = "https://api.smtp2go.com/v3/email/send";
         private const string FromAddress = "noreply@hawes.co.nz";
+        private readonly SmtpOptions _smtpOptions;
 
-        public static async Task<bool> SendEmailAsync(string to, string subject, string body)
+        public SMTP2GO(IOptions<SmtpOptions> smtpOptions)
+        {
+            _smtpOptions = smtpOptions.Value;
+        }
+
+        public async Task<bool> SendEmailAsync(string to, string subject, string body)
         {
             // Get secrets from configuration when ready
-            var builder = new ConfigurationBuilder().AddUserSecrets<Program>();
-            var projectDir = Directory.GetParent("Authentication");
-            var secretFiles = Directory.EnumerateFiles(".", "secrets.json", SearchOption.AllDirectories);
-            foreach (var path in secretFiles)
-            {
-                builder.AddJsonFile(path, optional: true);
-                //config.Configuration.AddJsonFile(path);
-            }
-            var config = builder.Build();
-            var ApiKey = config["smtp2go:apiKey"];
+            var ApiKey = _smtpOptions.ApiKey;
 
             using var httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));

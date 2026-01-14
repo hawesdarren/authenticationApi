@@ -11,7 +11,7 @@ namespace Authentication.Application.Validations
         {
             bool result = false;
             // todo - shif regex t database
-            string pattern = "^(?:(?=.*\\d)(?=.*[\\w\\W])(?=.*[A-Z]).{7,})";
+            string pattern = "^(?:(?=.*\\d)(?=.*[\\W])(?=.*[A-Z]).{7,})";
             Regex rg = new Regex(pattern);
             Match match = rg.Match(password);
             if (match.Success)
