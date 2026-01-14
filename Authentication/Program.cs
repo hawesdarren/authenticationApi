@@ -15,6 +15,7 @@ var builder = WebApplication.CreateBuilder(args);
 }*/
 builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
                      .AddJsonFile("secrets.json", optional: true, reloadOnChange: false)
+                     .AddJsonFile("app/secret-volume/secrets.json", optional: true, reloadOnChange: false)
                      .AddEnvironmentVariables();
 
 
