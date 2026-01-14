@@ -3,6 +3,7 @@ using Authentication.Json.Requests;
 using Authentication.Json.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using System.Reflection.Metadata;
 using System.Security.Claims;
 using System.Text.Json;
@@ -13,12 +14,16 @@ namespace Authentication.Controllers
     [Route("api/[controller]")]
     public class authenticationController : ControllerBase
     {
-       
         private readonly ILogger<authenticationController> _logger;
+        private readonly AuthenticationOptions _authenticationOptions;
+        private readonly SmtpOptions _smtpOptions;
+     
 
-        public authenticationController(ILogger<authenticationController> logger)
+        public authenticationController(ILogger<authenticationController> logger, IOptions<AuthenticationOptions> authenticationOptions, IOptions<SmtpOptions> smtpOptions)
         {
             _logger = logger;
+            _authenticationOptions = authenticationOptions.Value;
+            _smtpOptions = smtpOptions.Value;
         }
 
         [HttpPost]
@@ -26,7 +31,8 @@ namespace Authentication.Controllers
         public IActionResult Login([FromBody] Json.Requests.LoginRequest loginRequest)
         {
             LoginResponse loginResponse = new() { Success = false, Authenticated = false };
-            loginResponse = LoginUser.ValidatePassword(loginRequest);
+            var loginUser = new LoginUser(Microsoft.Extensions.Options.Options.Create(_authenticationOptions));
+            loginResponse = loginUser.ValidatePassword(loginRequest);
             if (!loginResponse.Success) {
                 _logger.LogInformation($"Login unsuccessful: {loginResponse.GetError}");
             }
@@ -40,7 +46,8 @@ namespace Authentication.Controllers
         public IActionResult Register([FromBody] Json.Requests.RegisterRequest registerRequest)
         {
             RegisterResponse registerResponse = new RegisterResponse();
-            registerResponse = RegisterUser.Register(registerRequest);
+            RegisterUser registerUser = new RegisterUser(Microsoft.Extensions.Options.Options.Create(_authenticationOptions));
+            registerResponse = registerUser.Register(registerRequest);
             if (!registerResponse.Success) {
                 _logger.LogInformation($"Registration unsuccessful: {registerResponse.error}");
             }
@@ -55,7 +62,8 @@ namespace Authentication.Controllers
             var idendity = User.Identity as ClaimsIdentity;
 
             ChangePasswordResponse changePasswordResponse = new ChangePasswordResponse();
-            changePasswordResponse = Application.ChangePassword.Change(changePasswordRequest, idendity.FindFirst(ClaimTypes.Email).Value);
+            ChangePassword changePassword = new ChangePassword(Microsoft.Extensions.Options.Options.Create(_authenticationOptions));
+            changePasswordResponse = changePassword.Change(changePasswordRequest, idendity.FindFirst(ClaimTypes.Email).Value);
             if (!changePasswordResponse.Success) {
                 _logger.LogInformation($"Change password unsuccessful: {changePasswordResponse.error}");
             }
@@ -73,7 +81,8 @@ namespace Authentication.Controllers
             var email = idendity?.FindFirst(ClaimTypes.Email)?.Value;
             var issuer = idendity?.FindFirst("iss")?.Value;
 #pragma warning disable CS8604 // Possible null reference argument.
-            TfaSetupResponse tfaSetupResponse = Tfa.CreateNewTotp(email, issuer);
+            Tfa tfa = new Tfa(Microsoft.Extensions.Options.Options.Create(_authenticationOptions));
+            TfaSetupResponse tfaSetupResponse = tfa.CreateNewTotp(email, issuer);
             tfaSetupResponse.Authenticated = Convert.ToBoolean(idendity.FindFirst(ClaimTypes.Authentication).Value);
             if (!tfaSetupResponse.Success) {
                 _logger.LogInformation($"TFA Setup unsuccessful: {tfaSetupResponse.error}");
@@ -89,8 +98,9 @@ namespace Authentication.Controllers
         {
             var idendity = User.Identity as ClaimsIdentity;
             string email = idendity.FindFirst(ClaimTypes.Email).Value;
-            TfaValidateResponse tfaValidateResponse =  Tfa.Validate(email, validateTfaRequest.tfaCode);
-            if (!tfaValidateResponse.Success) { 
+            Tfa tfa = new Tfa(Microsoft.Extensions.Options.Options.Create(_authenticationOptions));
+            TfaValidateResponse tfaValidateResponse =  tfa.Validate(email, validateTfaRequest.tfaCode);
+            if (!tfaValidateResponse.Success) {
                 _logger.LogInformation($"TFA Validate unsuccessful: {tfaValidateResponse.error}");
             }
             return Ok(tfaValidateResponse);
@@ -104,7 +114,8 @@ namespace Authentication.Controllers
         {
             var idendity = User.Identity as ClaimsIdentity;
             string email = idendity.FindFirst(ClaimTypes.Email).Value;
-            EnableTfaResponse enbleTfaResponse = Tfa.EnableTfa(email, enableTfaRequest.enableTfa, enableTfaRequest.tfaCode);
+            Tfa tfa = new Tfa(Microsoft.Extensions.Options.Options.Create(_authenticationOptions));
+            EnableTfaResponse enbleTfaResponse = tfa.EnableTfa(email, enableTfaRequest.enableTfa, enableTfaRequest.tfaCode);
             if (!enbleTfaResponse.Success) {
                 _logger.LogInformation($"TFA enable unsuccessful: {enbleTfaResponse.error}");
             }
@@ -120,11 +131,12 @@ namespace Authentication.Controllers
             // todo - need to work out what should be in the refresh token and how to store it
             //var identity = User.Identity as ClaimsIdentity;
             //string email = identity.FindFirst(ClaimTypes.Email).Value;
-            string newToken = Token.GenerateJwtToken("someone@hawes.co.nz", true, 10);
+
+            var tokenGenerator = new Token(Microsoft.Extensions.Options.Options.Create(_authenticationOptions));
+            string newToken = tokenGenerator.GenerateJwtToken("someone@hawes.co.nz", true, 10);
             RefreshTokenResponse refreshTokenResponse = new RefreshTokenResponse { Authenticated = true, Success = true };
             refreshTokenResponse.token = newToken;
             return Ok(refreshTokenResponse);
-
         }
 
         [HttpPost]
@@ -132,7 +144,8 @@ namespace Authentication.Controllers
         public async Task<IActionResult> ForgottenPasswordResponse([FromBody] Json.Requests.ForgottenPasswordRequest forgottenPasswordRequest)
         {
             ForgottenPasswordResponse forgottenPasswordResponse = new ForgottenPasswordResponse { Authenticated = false, Success = false };
-            forgottenPasswordResponse = await ForgottenPassword.ProcessForgottenPasswordAsync(forgottenPasswordRequest);
+            ForgottenPassword forgottenPassword = new ForgottenPassword(Microsoft.Extensions.Options.Options.Create(_smtpOptions));
+            forgottenPasswordResponse = await forgottenPassword.ProcessForgottenPasswordAsync(forgottenPasswordRequest);
             if (!forgottenPasswordResponse.Success)
             {
                 _logger.LogInformation($"Forgotten password unsuccessful: {forgottenPasswordResponse.error}");

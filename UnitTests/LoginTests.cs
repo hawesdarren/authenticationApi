@@ -1,33 +1,48 @@
 ﻿using Authentication.Application;
 using Authentication.Json.Responses;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
+using Shouldly;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using Shouldly;
-using System.Net;
 
 namespace UnitTests
 {
     
     public class LoginTests
     {
+        private IOptions<AuthenticationOptions> BuildOptions()
+        {
+            var config = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
+                .AddJsonFile("app/secret-volume/secrets.json", optional: true, reloadOnChange: false)
+                .AddUserSecrets(typeof(AuthenticationOptions).Assembly)
+                .Build();
+            var auth = new AuthenticationOptions();
+            config.GetSection("Authentication").Bind(auth);
+            return Options.Create(auth);
+        }
+
         [TestCase("someone@somewhere.co.nz", "Testing123$", true, true)]
         [TestCase("someone@somewhere.co.nz", "Testing1234$", false, false)]
         [TestCase("noone@somewhere.co.nz", "Testing123$", false, false)]
         [TestCase("@somewhere.co.nz", "Testing123$", false, false)]
         public void LoginUserTest(string email, string password, bool success, bool authenticated)
         {
-            
+            var options = BuildOptions();
+
             Authentication.Json.Requests.LoginRequest request = new()
             {
                 email = email,
                 password = password,
                 
             };
-
-            LoginResponse response = LoginUser.ValidatePassword(request);
+            LoginUser loginUser = new(options);
+            LoginResponse response = loginUser.ValidatePassword(request);
             response.ShouldSatisfyAllConditions(
                 () => response.ShouldNotBeNull(),
                 () => response.Success.ShouldBe(success),
@@ -39,6 +54,9 @@ namespace UnitTests
         [Test]
         public void PasswordBlockedLoginUserTest()
         {
+            var options = BuildOptions();
+
+            LoginUser loginUser = new(options);
             Authentication.Json.Requests.LoginRequest request = new()
             {
                 email = "someone2@somewhere.co.nz",
@@ -52,11 +70,11 @@ namespace UnitTests
             };
             // Lock the password for the user
             for (int i = 0; i <= 6; i++) {
-                response = LoginUser.ValidatePassword(request);
+                response = loginUser.ValidatePassword(request);
             }
             // Login with locked password
             request.password = "Testing123$";
-            response = LoginUser.ValidatePassword(request);
+            response = loginUser.ValidatePassword(request);
 
             response.ShouldSatisfyAllConditions(
                 () => response.ShouldNotBeNull(),
@@ -70,6 +88,8 @@ namespace UnitTests
         [TestCase("someone4@somewhere.co.nz", "Testing123$", true)]
         [TestCase("someone5@somewhere.co.nz", "Testing123$", false)]
         public void LoginTfaEnabled(string email, string password, bool tfaEnabled) {
+            var options = BuildOptions();
+
             Authentication.Json.Requests.LoginRequest request = new()
             {
                 email = email,
@@ -83,7 +103,8 @@ namespace UnitTests
                 Authenticated = false
             };
 
-            response = LoginUser.ValidatePassword(request);
+            LoginUser loginUser = new(options);
+            response = loginUser.ValidatePassword(request);
             response.ShouldSatisfyAllConditions(
                () => response.ShouldNotBeNull(),
                () => response.Success.ShouldBeTrue(),

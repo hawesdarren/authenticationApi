@@ -4,12 +4,20 @@ using MySql.Data.MySqlClient;
 using OtpNet;
 using System.Diagnostics.Eventing.Reader;
 using System.Text;
+using Microsoft.Extensions.Options;
 
 namespace Authentication.Application
 {
     public class Tfa : DatabaseConnector
     {
-        public static TfaSetupResponse CreateNewTotp(string email, string issuer) {
+        private readonly AuthenticationOptions _authenticationOptions;
+
+        public Tfa(Microsoft.Extensions.Options.IOptions<AuthenticationOptions> authenticationOptions)
+        {
+            _authenticationOptions = authenticationOptions.Value;
+        }
+
+        public TfaSetupResponse CreateNewTotp(string email, string issuer) {
 
             var key = KeyGeneration.GenerateRandomKey(20);
             var base32String = Base32Encoding.ToString(key);
@@ -23,7 +31,7 @@ namespace Authentication.Application
             return tfaSetupResponse;
         }
 
-        public static TfaValidateResponse Validate(string email, string input) {
+        public TfaValidateResponse Validate(string email, string input) {
             // Get key from database
             string key = GetTfaKey(email);
             var base32Bytes = Base32Encoding.ToBytes(key);
@@ -33,10 +41,11 @@ namespace Authentication.Application
             bool verify = totp.VerifyTotp(input, out timeStepMatched, window: null);
             TfaValidateResponse tfaValidateResponse = new() { Success = false, Authenticated = false };
             if (verify) { 
+                Token token = new Token(Microsoft.Extensions.Options.Options.Create(_authenticationOptions!));
                 tfaValidateResponse.Success = true;
                 tfaValidateResponse.Authenticated = true;
-                tfaValidateResponse.token = Token.GenerateJwtToken(email, true, 10);
-                tfaValidateResponse.refreshToken = Token.RefreshToken(60);
+                tfaValidateResponse.token = token.GenerateJwtToken(email, true, 10);
+                tfaValidateResponse.refreshToken = token.RefreshToken(60);
             }
             else
             {
@@ -47,7 +56,7 @@ namespace Authentication.Application
             return tfaValidateResponse;
         }
 
-        private static string GetTfaKey(string email) {
+        private string GetTfaKey(string email) {
             // Query
             StringBuilder query = new StringBuilder();
             query.Append("SELECT tfa.key  ");
@@ -67,7 +76,7 @@ namespace Authentication.Application
             return key;
         }
 
-        private static bool RegisterTotpInDatabase(string email, string key) {
+        private bool RegisterTotpInDatabase(string email, string key) {
             // Register in database, but do not enable
             // Get Get user info
             bool result = false;
@@ -135,7 +144,7 @@ namespace Authentication.Application
 
         }
 
-        public static bool IsTfaEnabled(string email) {
+        public bool IsTfaEnabled(string email) {
             bool tfaEnabled = false;
             // Connect to database
             MySqlConnection conn = OpenConnection();
@@ -161,7 +170,7 @@ namespace Authentication.Application
             return tfaEnabled;
         }
 
-        public static bool IsTfaRegistered(string email) {
+        public bool IsTfaRegistered(string email) {
             bool result = false;
             // Connect to database
             MySqlConnection conn = OpenConnection();
@@ -187,7 +196,7 @@ namespace Authentication.Application
             return result;
         }
 
-        public static EnableTfaResponse EnableTfa(string email, bool register, string? totp) {
+        public EnableTfaResponse EnableTfa(string email, bool register, string? totp) {
             bool result = false;
             // To enable tfa valid totp must be supplied 
             // To disable totp not required
@@ -230,8 +239,9 @@ namespace Authentication.Application
                     result = true;
                     enableTfaResponse.Success = result;
                     // Add tokens
-                    enableTfaResponse.token = Token.GenerateJwtToken(email, true, 10);
-                    enableTfaResponse.refreshToken = Token.GenerateJwtToken(email, true, 600);
+                    Token token = new Token(Microsoft.Extensions.Options.Options.Create(_authenticationOptions!));
+                    enableTfaResponse.token = token.GenerateJwtToken(email, true, 10);
+                    enableTfaResponse.refreshToken = token.GenerateJwtToken(email, true, 600);
                 }
                 else {
                     enableTfaResponse.SetError(Json.Enums.ErrorEnums.Error.TFA_ERROR);

@@ -1,4 +1,5 @@
 ﻿using Authentication.Json.Responses;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using System.Collections.Generic;
@@ -10,57 +11,40 @@ namespace Authentication.Application
 {
     public class Token
     {
-                
-        public static string GenerateJwtToken(string email, bool authentication, int timeout)
-        {
-            
-            //var config = new ConfigurationBuilder().AddUserSecrets<Program>().AddJsonFile("secrets.json", optional: true).Build();
-            var builder = new ConfigurationBuilder().AddUserSecrets<Program>();
-            var projectDir = Directory.GetParent("Authentication");
-            var secretFiles = Directory.EnumerateFiles(".", "secrets.json", SearchOption.AllDirectories);
-            foreach (var path in secretFiles)
-            {
-                builder.AddJsonFile(path, optional: true);
-                //config.Configuration.AddJsonFile(path);
-            }
-            var config = builder.Build();
+        private readonly AuthenticationOptions _authenticationOptions;
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["authentication:issuerSigningKey"]));
+        public Token(IOptions<AuthenticationOptions> authenticationOptions)
+        {
+            _authenticationOptions = authenticationOptions.Value;
+        }
+
+
+        public string GenerateJwtToken(string email, bool authentication, int timeout)
+        {
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_authenticationOptions.IssuerSigningKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
-                issuer: config["authentication:validIssuer"],
-                audience: config["authentication:validAudience"],
+                issuer: _authenticationOptions.ValidIssuer,
+                audience: _authenticationOptions.ValidAudience,
                 claims: new List<Claim> {
                     new Claim(ClaimTypes.Authentication, authentication.ToString()),
                     new Claim(ClaimTypes.Email, email),
                 },
                 expires: DateTime.Now.AddMinutes(timeout),
                 signingCredentials: creds);
-                
-            
+
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        public static string RefreshToken(int timeout) {
+        public string RefreshToken(int timeout) {
 
-            //var config = new ConfigurationBuilder().AddUserSecrets<Program>().AddJsonFile("secrets.json", optional: true).Build();
-            var builder = new ConfigurationBuilder().AddUserSecrets<Program>();
-            var projectDir = Directory.GetParent("Authentication");
-            var secretFiles = Directory.EnumerateFiles(".", "secrets.json", SearchOption.AllDirectories);
-            foreach (var path in secretFiles)
-            {
-                builder.AddJsonFile(path, optional: true);
-                //config.Configuration.AddJsonFile(path);
-            }
-            var config = builder.Build();
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["authentication:issuerSigningKey"]));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_authenticationOptions.IssuerSigningKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
-                issuer: config["authentication:validIssuer"],
-                audience: config["authentication:validAudience"],
+                issuer: _authenticationOptions.ValidIssuer,
+                audience: _authenticationOptions.ValidAudience,
                 // Most likely need cliams that a different to the authToken
                 /*claims: new List<Claim> {
                     new Claim(ClaimTypes.Authentication, authentication.ToString()),
@@ -74,7 +58,7 @@ namespace Authentication.Application
 
         }
 
-        public static long? GetExpiryFromToken(string token) 
+        public long? GetExpiryFromToken(string token) 
         {
             var handler = new JwtSecurityTokenHandler();
             var jwtToken = handler.ReadJwtToken(token);
