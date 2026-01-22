@@ -18,7 +18,7 @@ namespace UnitTests
         {
             var config = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
-                .AddJsonFile("app/secret-volume/secrets.json", optional: true, reloadOnChange: false)
+                .AddJsonFile("secret-volume/secrets.json", optional: true, reloadOnChange: false)
                 .AddUserSecrets(typeof(AuthenticationOptions).Assembly)
                 .Build();
             var auth = new AuthenticationOptions();
