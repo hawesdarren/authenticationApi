@@ -4,6 +4,6 @@ services:
     container_name: authentication-api-unit-test
     volumes:
       - .:/app
-      - /home/darren/authentication:/app/Authentication/secrets
+      - /home/darren/authentication:/app/Authentication/secret-volume
     working_dir: /app
     command: [ "dotnet", "test", "--filter", "FullyQualifiedName=UnitTests", "--logger:trx", "--logger:html" ]
