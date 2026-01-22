@@ -16,6 +16,10 @@ namespace UnitTests
 {
     public class TfaUnitTests : DatabaseConnector
     {
+        public TfaUnitTests() : base(Options.Create(new AuthenticationOptions()))
+        {
+        }
+
         private IOptions<AuthenticationOptions> BuildOptions()
         {
             var config = new ConfigurationBuilder()
@@ -57,8 +61,8 @@ namespace UnitTests
             query.Append("INNER JOIN Authentication.tfa ON users.id=tfa.idUsers ");
             query.Append("WHERE tfa.enabled = 1;");
             // Connect to database
-            MySqlConnection conn = OpenConnection();
-            conn = OpenConnection();
+            DatabaseConnector databaseConnector = new DatabaseConnector(options);
+            MySqlConnection conn = databaseConnector.OpenConnection();
             // Run query
             MySqlCommand cmd = new MySqlCommand(query.ToString(), conn);
             var queryResult = cmd.ExecuteReader();
@@ -82,8 +86,8 @@ namespace UnitTests
             query.Append("LEFT JOIN Authentication.tfa ON users.id=tfa.idUsers ");
             query.Append("WHERE tfa.enabled IS NULL;");
             // Connect to database
-            MySqlConnection conn = OpenConnection();
-            conn = OpenConnection();
+            DatabaseConnector databaseConnector = new DatabaseConnector(options);
+            MySqlConnection conn = databaseConnector.OpenConnection();
             // Run query
             MySqlCommand cmd = new MySqlCommand(query.ToString(), conn);
             var queryResult = cmd.ExecuteReader();
@@ -107,8 +111,8 @@ namespace UnitTests
             query.Append("LEFT JOIN Authentication.tfa ON users.id=tfa.idUsers ");
             query.Append("WHERE tfa.enabled = 1;");
             // Connect to database
-            MySqlConnection conn = OpenConnection();
-            conn = OpenConnection();
+            DatabaseConnector databaseConnector = new DatabaseConnector(options);
+            MySqlConnection conn = databaseConnector.OpenConnection();
             // Run query
             MySqlCommand cmd = new MySqlCommand(query.ToString(), conn);
             var queryResult = cmd.ExecuteReader();
@@ -141,8 +145,8 @@ namespace UnitTests
             query.Append("LEFT JOIN Authentication.tfa ON users.id=tfa.idUsers ");
             query.Append("WHERE tfa.enabled = 1;");
             // Connect to database
-            MySqlConnection conn = OpenConnection();
-            conn = OpenConnection();
+            DatabaseConnector databaseConnector = new DatabaseConnector(options);
+            MySqlConnection conn = databaseConnector.OpenConnection();
             // Run query
             MySqlCommand cmd = new MySqlCommand(query.ToString(), conn);
             var queryResult = cmd.ExecuteReader();

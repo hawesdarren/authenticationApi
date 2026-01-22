@@ -13,6 +13,7 @@ namespace Authentication.Application
         private readonly AuthenticationOptions _authenticationOptions;
 
         public RegisterUser(IOptions<AuthenticationOptions> authenticationOptions)
+            : base(authenticationOptions) // Pass authenticationOptions to base class constructor
         {
             _authenticationOptions = authenticationOptions.Value;
         }
@@ -36,7 +37,7 @@ namespace Authentication.Application
                 return registerResponse;
             }
             // Email already registered
-            var isEmailAlreadyRegistered = EmailValidation.EmailRegisteredInDatabase(registerRequest.email);
+            var isEmailAlreadyRegistered = EmailValidation.EmailRegisteredInDatabase(registerRequest.email, Microsoft.Extensions.Options.Options.Create(_authenticationOptions));
             if (isEmailAlreadyRegistered)
             {
                 registerResponse.Success = false;
@@ -52,7 +53,8 @@ namespace Authentication.Application
                 return registerResponse;
             }
             // Is password in blocked password list
-            var isPasswordBlocked = PasswordValidation.CommonlyUsedPasswordsCheck(registerRequest.password);
+            PasswordValidation passwordValidation = new PasswordValidation(Microsoft.Extensions.Options.Options.Create(_authenticationOptions));
+            var isPasswordBlocked = passwordValidation.CommonlyUsedPasswordsCheck(registerRequest.password);
             if (isPasswordBlocked)
             {
                 registerResponse.Success = false;

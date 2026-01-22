@@ -12,7 +12,7 @@ namespace Authentication.Application
     {
         private readonly AuthenticationOptions _authenticationOptions;
 
-        public Tfa(Microsoft.Extensions.Options.IOptions<AuthenticationOptions> authenticationOptions)
+        public Tfa(IOptions<AuthenticationOptions> authenticationOptions) : base(authenticationOptions)
         {
             _authenticationOptions = authenticationOptions.Value;
         }

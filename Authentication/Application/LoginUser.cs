@@ -11,24 +11,14 @@ namespace Authentication.Application
     {
         private readonly AuthenticationOptions _authenticationOptions;
 
+        // Use primary constructor to pass authenticationOptions to base class (DatabaseConnector)
         public LoginUser(IOptions<AuthenticationOptions> authenticationOptions)
+            : base(authenticationOptions)
         {
             _authenticationOptions = authenticationOptions.Value;
         }
 
-        private static bool IsMaxLoginAttempts(string email) { 
-            bool result = false;
-            // Connect to database
-            MySqlConnection conn = OpenConnection();
-            // Create the query
-            var sqlString = $"SELECT loginAttempts FROM Authentication.users WHERE email = '{email}'";
-            MySqlCommand cmd = new MySqlCommand(sqlString, conn);
-            // Run the query
-            var numLoginAttempts = (long)cmd.ExecuteScalar();
-            // Return result
-            return result;
-        
-        }
+       
 
         // Fix for CS7036 and IDE0090:
         // - Pass an AuthenticationOptions instance to the Token constructor.
@@ -45,24 +35,25 @@ namespace Authentication.Application
                 return loginResponse;
             }
             //Is Email registered
-            var isEmailRegistered = EmailValidation.EmailRegisteredInDatabase(loginRequest.email);
+            var isEmailRegistered = EmailValidation.EmailRegisteredInDatabase(loginRequest.email, Options.Create(_authenticationOptions));
             if (!isEmailRegistered) { 
                 loginResponse.Success = false;
                 loginResponse.SetError(LoginResponse.Error.INVALID);
                 return loginResponse;
             }
             // Is Password in a Temporary block (not this is not a temp password but a temporary block due to max login attempts)
-            var isTempBlock = PasswordValidation.IsTemporaryBlockedPassword(loginRequest.email);
+            PasswordValidation passwordValidation = new PasswordValidation(Options.Create(_authenticationOptions));
+            var isTempBlock = passwordValidation.IsTemporaryBlockedPassword(loginRequest.email);
             if (isTempBlock) {
                 loginResponse.Success = false;
                 loginResponse.SetError(LoginResponse.Error.PASSWORD_TEMP_BLOCK);
                 return loginResponse;
             }
             // Temp password check 
-            bool isTempPassword = PasswordValidation.IsTemporaryPassword(loginRequest.email);
+            bool isTempPassword = passwordValidation.IsTemporaryPassword(loginRequest.email);
             if (isTempPassword) {
                 // Temporary password expired check
-                bool isPasswordTempExpired = PasswordValidation.IsTemporaryPasswordExpired(loginRequest.email);
+                bool isPasswordTempExpired = passwordValidation.IsTemporaryPasswordExpired(loginRequest.email);
                 if (isPasswordTempExpired)
                 {
                     loginResponse.Success = false;
@@ -76,7 +67,7 @@ namespace Authentication.Application
             }
             
             // Validate the password
-            bool isPasswordValid = PasswordValidation.ValidatePasswordMatch(loginRequest.email, loginRequest.password);
+            bool isPasswordValid = passwordValidation.ValidatePasswordMatch(loginRequest.email, loginRequest.password);
             if (isPasswordValid)
             {
                 // Check if tfa is enabled
