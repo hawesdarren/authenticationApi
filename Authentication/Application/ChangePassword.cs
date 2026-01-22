@@ -11,10 +11,9 @@ namespace Authentication.Application
 {
     public class ChangePassword : DatabaseConnector
     {
+        private readonly AuthenticationOptions _authenticationOptions;
 
-        readonly AuthenticationOptions _authenticationOptions;
-
-        public ChangePassword(IOptions<AuthenticationOptions> authenticationOptions)
+        public ChangePassword(IOptions<AuthenticationOptions> authenticationOptions) : base(authenticationOptions)
         {
             _authenticationOptions = authenticationOptions.Value;
         }
@@ -34,13 +33,14 @@ namespace Authentication.Application
                 return response;
             }
             // Check for common password in block list
-            if (PasswordValidation.CommonlyUsedPasswordsCheck(request.password)) {
+            PasswordValidation passwordValidation = new PasswordValidation(Microsoft.Extensions.Options.Options.Create(_authenticationOptions));
+            if (passwordValidation.CommonlyUsedPasswordsCheck(request.password)) {
                 response.Success = false;
                 response.SetError(Json.Enums.ErrorEnums.Error.COMMON_PASSWORD);
                 return response;
             }
             //Update the password in the database
-            response.Success = UpdatePassword(request, email); ;
+            response.Success = UpdatePassword(request, email);
             return response;
 
         }

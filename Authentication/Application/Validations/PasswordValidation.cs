@@ -1,4 +1,5 @@
-﻿using MySql.Data.MySqlClient;
+﻿using Microsoft.Extensions.Options;
+using MySql.Data.MySqlClient;
 using MySqlX.XDevAPI.Common;
 using System.Collections;
 using System.Text.RegularExpressions;
@@ -7,6 +8,11 @@ namespace Authentication.Application.Validations
 {
     public class PasswordValidation : DatabaseConnector
     {
+        public PasswordValidation(IOptions<AuthenticationOptions> authenticationOptions)
+            : base(authenticationOptions)
+        {
+        }
+
         public static bool PasswordComplexityCheck(string password)
         {
             bool result = false;
@@ -21,12 +27,12 @@ namespace Authentication.Application.Validations
             return result;
         }
 
-        public static bool ValidatePasswordMatch(string email, string password)
+        public bool ValidatePasswordMatch(string email, string password)
         {
 
             // todo
             // Connect to database
-            MySqlConnection conn = OpenConnection();
+            MySqlConnection conn = this.OpenConnection();
             // Run query
             var sqlString = $"SELECT salt, hashedPassword FROM Authentication.users WHERE email = '{email}';";
             MySqlCommand cmd = new MySqlCommand(sqlString, conn);
@@ -53,14 +59,14 @@ namespace Authentication.Application.Validations
             return isPasswordMatch;
         }
 
-        public static bool CommonlyUsedPasswordsCheck(string password)
+        public bool CommonlyUsedPasswordsCheck(string password)
         {
             // todo
             // Should reyurn true id password is in the blockedPassword table in the Authentication database
             // Compare should be done in upper case, convert password to uppercase and sql query to uppercase
             bool result = true;
             // Connect to database
-            MySqlConnection conn = OpenConnection();
+            MySqlConnection conn = this.OpenConnection();
             // Run query
             var sqlString = $"SELECT COUNT(UPPER(password)) FROM Authentication.blockedPasswords WHERE password = '{password.ToUpper()}'";
             MySqlCommand cmd = new MySqlCommand(sqlString, conn);
@@ -76,12 +82,12 @@ namespace Authentication.Application.Validations
             return result;
         }
 
-        public static bool IsTemporaryPasswordExpired(string email)
+        public bool IsTemporaryPasswordExpired(string email)
         {
             // Return true if password is temporary password
             bool result = false;
             // Connect to database
-            MySqlConnection conn = OpenConnection();
+            MySqlConnection conn = this.OpenConnection();
             // Run query
             var sqlString = $"SELECT expiryDate FROM Authentication.users WHERE email = '{email}'";
             MySqlCommand cmd = new MySqlCommand(sqlString, conn);
@@ -103,12 +109,12 @@ namespace Authentication.Application.Validations
             return result;
         }
 
-        public static bool IsTemporaryPassword(string email)
+        public bool IsTemporaryPassword(string email)
         {
             // Return true if password is temporary password
             bool result = false;
             // Connect to database
-            MySqlConnection conn = OpenConnection();
+            MySqlConnection conn = this.OpenConnection();
             // Run query
             var sqlString = $"SELECT expiryDate FROM Authentication.users WHERE email = '{email}'";
             MySqlCommand cmd = new MySqlCommand(sqlString, conn);
@@ -125,12 +131,12 @@ namespace Authentication.Application.Validations
             return result;
         }
 
-        public static bool IsTemporaryBlockedPassword(string email)
+        public bool IsTemporaryBlockedPassword(string email)
         {
             // Return true if password is temporary password
             bool result = false;
             // Connect to database
-            MySqlConnection conn = OpenConnection();
+            MySqlConnection conn = this.OpenConnection();
             // Run query
             var sqlString = $"SELECT tempBlockExpiry FROM Authentication.users WHERE email = '{email}'";
             MySqlCommand cmd = new MySqlCommand(sqlString, conn);
@@ -153,7 +159,7 @@ namespace Authentication.Application.Validations
         }
 
 
-        private static Hashtable IncrementPasswordAttempts(string email)
+        private Hashtable IncrementPasswordAttempts(string email)
         {
 
             // Run query to get current number of login attempts
@@ -166,12 +172,12 @@ namespace Authentication.Application.Validations
             return result;
         }
 
-        private static Hashtable SetPasswordAttempts(string email, int attempts)
+        private Hashtable SetPasswordAttempts(string email, int attempts)
         {
             Hashtable result = new Hashtable();
             // Run query to update number of login attempts
             // Connect to database
-            MySqlConnection conn = OpenConnection();
+            MySqlConnection conn = this.OpenConnection();
             string sqlUpdateAttemptsString = $"UPDATE Authentication.users SET loginAttempts = {attempts} WHERE email = '{email}'";
             MySqlCommand cmd = new MySqlCommand(sqlUpdateAttemptsString, conn);
             var attemptsQueryResult = cmd.ExecuteNonQuery();
@@ -195,11 +201,11 @@ namespace Authentication.Application.Validations
             return result;
         }
 
-        private static int GetNumberOfPasswordAttempts(string email)
+        private int GetNumberOfPasswordAttempts(string email)
         {
 
             // Connect to database
-            MySqlConnection conn = OpenConnection();
+            MySqlConnection conn = this.OpenConnection();
             // Run query to get current number of login attempts
             var sqlSelectString = $"SELECT loginAttempts FROM Authentication.users WHERE email = '{email}'";
             MySqlCommand cmd = new MySqlCommand(sqlSelectString, conn);

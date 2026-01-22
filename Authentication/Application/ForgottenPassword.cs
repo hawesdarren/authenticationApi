@@ -45,7 +45,8 @@ namespace Authentication.Application
         {
             bool result = false;
             // Connect to database
-            MySqlConnection conn = DatabaseConnector.OpenConnection();
+            var authenticationOptions = Options.Create(new AuthenticationOptions()); // You may need to populate AuthenticationOptions as required
+            MySqlConnection conn = new DatabaseConnector(authenticationOptions).OpenConnection();
             // Create the query
             var sqlString = $"SELECT COUNT(*) FROM Authentication.users AS users " +
                             $"WHERE users.email = '{email}';";
@@ -67,7 +68,8 @@ namespace Authentication.Application
         {
             bool result = false;
             // Connect to database
-            MySqlConnection conn = DatabaseConnector.OpenConnection();
+            var authenticationOptions = Options.Create(new AuthenticationOptions()); // You may need to populate AuthenticationOptions as required
+            MySqlConnection conn = new DatabaseConnector(authenticationOptions).OpenConnection();
             // Hash the password
             // Create Salt and Hash for Password
             byte[] salt = Argon.CreateSalt();

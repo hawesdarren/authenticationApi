@@ -1,11 +1,12 @@
 ﻿using Authentication.Json.Responses;
+using Microsoft.Extensions.Options; // Add this for IOptions<T>
 using MySql.Data.MySqlClient;
 using System.Data; // Needed for ConnectionState
 using System.Net.Mail;
 
 namespace Authentication.Application.Validations
 {
-    public class EmailValidation : DatabaseConnector
+    public class EmailValidation
     {
         public static bool ValidateFormat(string email)
         {
@@ -13,7 +14,7 @@ namespace Authentication.Application.Validations
             // Check email is valid
             try
             {
-                MailAddress mailAddress = new MailAddress(email);
+                MailAddress mailAddress = new(email);
                 result = true;
             }
             catch (FormatException)
@@ -28,15 +29,16 @@ namespace Authentication.Application.Validations
             return result;
         }
 
-        public static bool EmailRegisteredInDatabase(string email)
+        public static bool EmailRegisteredInDatabase(string email, IOptions<AuthenticationOptions> authenticationOptions)
         {
             bool result = true;
             // Connect to database
-            MySqlConnection conn = OpenConnection();
-            
+            DatabaseConnector databaseConnector = new(authenticationOptions);
+            MySqlConnection conn = databaseConnector.OpenConnection();
+
             // Run query
             var sqlString = $"SELECT COUNT(UPPER(email)) FROM Authentication.users WHERE email = '{email.ToUpper()}';";
-            MySqlCommand cmd = new MySqlCommand(sqlString, conn);
+            MySqlCommand cmd = new(sqlString, conn);
             var queryResult = (long)cmd.ExecuteScalar();
             if (queryResult == 0)
             {
@@ -45,7 +47,5 @@ namespace Authentication.Application.Validations
             conn.Close();
             return result;
         }
-
-
     }
 }
