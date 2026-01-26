@@ -144,7 +144,7 @@ namespace Authentication.Controllers
         public async Task<IActionResult> ForgottenPasswordResponse([FromBody] Json.Requests.ForgottenPasswordRequest forgottenPasswordRequest)
         {
             ForgottenPasswordResponse forgottenPasswordResponse = new ForgottenPasswordResponse { Authenticated = false, Success = false };
-            ForgottenPassword forgottenPassword = new ForgottenPassword(Microsoft.Extensions.Options.Options.Create(_smtpOptions));
+            ForgottenPassword forgottenPassword = new ForgottenPassword(Options.Create(_smtpOptions), Options.Create(_authenticationOptions));
             forgottenPasswordResponse = await forgottenPassword.ProcessForgottenPasswordAsync(forgottenPasswordRequest);
             if (!forgottenPasswordResponse.Success)
             {

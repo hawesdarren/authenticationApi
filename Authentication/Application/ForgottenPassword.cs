@@ -8,10 +8,12 @@ namespace Authentication.Application
     public class ForgottenPassword
     {
         private readonly SmtpOptions _smtpOptions;
+        private readonly AuthenticationOptions _authenticationOptions;
 
-        public ForgottenPassword(IOptions<SmtpOptions> smtpOptions)
+        public ForgottenPassword(IOptions<SmtpOptions> smtpOptions, IOptions<AuthenticationOptions> authenticationOptions)
         {
             _smtpOptions = smtpOptions.Value;
+            _authenticationOptions = authenticationOptions.Value;
         }
 
         private static string GenerateTempPassword()
@@ -45,8 +47,7 @@ namespace Authentication.Application
         {
             bool result = false;
             // Connect to database
-            var authenticationOptions = Options.Create(new AuthenticationOptions()); // You may need to populate AuthenticationOptions as required
-            MySqlConnection conn = new DatabaseConnector(authenticationOptions).OpenConnection();
+            MySqlConnection conn = new DatabaseConnector(Options.Create(_authenticationOptions)).OpenConnection();
             // Create the query
             var sqlString = $"SELECT COUNT(*) FROM Authentication.users AS users " +
                             $"WHERE users.email = '{email}';";
@@ -67,9 +68,8 @@ namespace Authentication.Application
         private bool StoreTempPasswordInDatabase(string email, string tempPassword)
         {
             bool result = false;
-            // Connect to database
-            var authenticationOptions = Options.Create(new AuthenticationOptions()); // You may need to populate AuthenticationOptions as required
-            MySqlConnection conn = new DatabaseConnector(authenticationOptions).OpenConnection();
+            // Use the class-level _authenticationOptions instead of declaring a new local variable
+            MySqlConnection conn = new DatabaseConnector(Options.Create(_authenticationOptions)).OpenConnection();
             // Hash the password
             // Create Salt and Hash for Password
             byte[] salt = Argon.CreateSalt();
